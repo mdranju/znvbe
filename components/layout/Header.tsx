@@ -14,13 +14,16 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
   const dispatch = useDispatch();
-  
+
   const cartItems = useSelector((state: RootState) => state.cart.items);
-  const totalQuantity = useSelector((state: RootState) => state.cart.totalQuantity);
+  const totalQuantity = useSelector(
+    (state: RootState) => state.cart.totalQuantity,
+  );
   const isCartOpen = useSelector((state: RootState) => state.ui.isCartOpen);
 
   useEffect(() => {
     if (totalQuantity > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsBouncing(true);
       const timer = setTimeout(() => setIsBouncing(false), 300);
       return () => clearTimeout(timer);
@@ -46,7 +49,7 @@ export function Header() {
                 b
               </div>
               <span className="text-2xl font-bold tracking-tight">
-                believers
+                Bangladesh
               </span>
             </Link>
 
@@ -65,14 +68,16 @@ export function Header() {
                   <User size={20} className="text-gray-600" />
                 </div>
                 <div className="flex flex-col text-sm">
-                  <span className="text-gray-500 text-xs text-left">Sign In</span>
+                  <span className="text-gray-500 text-xs text-left">
+                    Sign In
+                  </span>
                   <span className="font-medium">Your Account</span>
                 </div>
               </Link>
 
               <button
                 onClick={() => dispatch(setCartOpen(true))}
-                className={`relative p-2 hover:text-gray-600 ${isBouncing ? 'animate-cart-bounce' : ''}`}
+                className={`relative p-2 hover:text-gray-600 ${isBouncing ? "animate-cart-bounce" : ""}`}
               >
                 <ShoppingBag size={24} />
                 <span className="absolute top-0 right-0 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
