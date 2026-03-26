@@ -1,7 +1,10 @@
+import { BackButton } from "@/components/common/BackButton";
+
 export default function TermsPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold text-center mb-12">
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <BackButton className="mb-" />
+      <h1 className="text-3xl font-black text-gray-900 mb-8">
         Terms and Conditions
       </h1>
 
