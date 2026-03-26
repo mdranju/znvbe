@@ -1,14 +1,18 @@
-import { products } from "@/lib/data";
+"use client";
+
+import { use } from "react";
+import { BackButton } from "@/components/common/BackButton";
+import { products, categories } from "@/lib/data";
 import { ProductCard } from "@/components/product/ProductCard";
 import Link from "next/link";
 import { SearchX } from "lucide-react";
 
-export default async function ProductsPage({
+export default function ProductsPage({
   searchParams,
 }: {
   searchParams: Promise<{ category?: string; search?: string }>;
 }) {
-  const resolvedSearchParams = await searchParams;
+  const resolvedSearchParams = use(searchParams);
   const category = resolvedSearchParams.category?.toLowerCase() || "";
   const search = resolvedSearchParams.search?.toLowerCase() || "";
 
@@ -18,23 +22,31 @@ export default async function ProductsPage({
   if (category) {
     // Basic category matching, in real app, products would have a category field
     // For our data, we map based on what's available or just return all if it's "all".
-    filteredProducts = filteredProducts.filter((p) => p.slug.includes(category));
+    filteredProducts = filteredProducts.filter((p) =>
+      p.slug.includes(category),
+    );
   }
 
   if (search) {
     filteredProducts = filteredProducts.filter((p) =>
-      p.name.toLowerCase().includes(search)
+      p.name.toLowerCase().includes(search),
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <BackButton className="mb-4" />
       <div className="flex flex-col gap-6 mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-          {search ? `Search Results for "${search}"` : category ? `${category.charAt(0).toUpperCase() + category.slice(1)} Products` : "All Products"}
+          {search
+            ? `Search Results for "${search}"`
+            : category
+              ? `${category.charAt(0).toUpperCase() + category.slice(1)} Products`
+              : "All Products"}
         </h1>
         <p className="text-gray-500">
-          Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+          Showing {filteredProducts.length} product
+          {filteredProducts.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -51,9 +63,10 @@ export default async function ProductsPage({
           </div>
           <h2 className="text-xl font-bold mb-2">No products found</h2>
           <p className="text-gray-500 mb-6 max-w-md mx-auto">
-            We couldn't find any products matching your current filters. Try adjusting your search term or category.
+            We couldn&apos;t find any products matching your current filters.
+            Try adjusting your search term or category.
           </p>
-          <Link 
+          <Link
             href="/products"
             className="px-6 py-2 bg-black text-white rounded font-medium hover:bg-gray-800 transition-colors"
           >

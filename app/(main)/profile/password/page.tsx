@@ -1,4 +1,5 @@
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { BackButton } from "@/components/common/BackButton";
 import Image from "next/image";
 
 export default function ChangePasswordPage() {
@@ -8,6 +9,7 @@ export default function ChangePasswordPage() {
         <ProfileSidebar />
 
         <div className="flex-1 w-full relative">
+          <BackButton className="mb-" />
           {/* Decorative background elements */}
           <div className="absolute -z-10 top-10 -left-10 text-orange-400 opacity-50">
             <svg

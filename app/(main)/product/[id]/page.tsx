@@ -2,7 +2,8 @@
 
 import { products } from "@/lib/data";
 import { addToCart } from "@/src/store/slices/cartSlice";
-import { X } from "lucide-react";
+import { ImageLightbox } from "@/components/product/ImageLightbox";
+import { BackButton } from "@/components/common/BackButton";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
@@ -24,6 +25,7 @@ export default function ProductDetail({
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ export default function ProductDetail({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <BackButton className="mb-4" />
       <div className="flex flex-col md:flex-row gap-8 lg:gap-12 mb-12">
         {/* Product Images */}
         <div className="w-full md:w-1/2 flex flex-col gap-4 relative z-10">
@@ -101,13 +104,18 @@ export default function ProductDetail({
             onMouseEnter={() => isDesktop && setIsZooming(true)}
             onMouseLeave={() => isDesktop && setIsZooming(false)}
             onMouseMove={handleMouseMove}
-            onClick={() => !isDesktop && setIsLightboxOpen(true)}
+            onClick={() => {
+              const idx = images.indexOf(selectedImage);
+              setLightboxIndex(idx >= 0 ? idx : 0);
+              setIsLightboxOpen(true);
+            }}
           >
             <Image
               src={selectedImage}
               alt={product.name}
-              fill
-              className="object-cover rounded-lg"
+              width={1000}
+              height={1000}
+              className="object-cover rounded-lg w-full h-full"
             />
           </div>
 
@@ -143,7 +151,7 @@ export default function ProductDetail({
         </div>
 
         {/* Product Info */}
-        <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="w-full md:w-1/2 flex flex-col items-start md:items-start text-center md:text-left">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
             {product.name}
           </h1>
@@ -330,30 +338,14 @@ export default function ProductDetail({
         )}
       </div>
 
-      {/* Mobile Lightbox */}
-      {!isDesktop && isLightboxOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/80 flex flex-col items-center justify-center pointer-events-auto">
-          <div className="absolute top-4 right-4 z-[110]">
-            <button
-              onClick={() => setIsLightboxOpen(false)}
-              className="p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors"
-            >
-              <X size={24} />
-            </button>
-          </div>
-          <div
-            className="w-full h-full overflow-auto flex items-center justify-center touch-pan-x touch-pan-y"
-            onClick={() => setIsLightboxOpen(false)}
-          >
-            <img
-              src={selectedImage}
-              alt={product.name}
-              className="w-full max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()} // Let user pinch-zoom on the image directly
-            />
-          </div>
-        </div>
-      )}
+      {/* Image Lightbox — swipe, pinch-to-zoom, pan */}
+      <ImageLightbox
+        key={lightboxIndex}
+        images={images}
+        initialIndex={lightboxIndex}
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+      />
     </div>
   );
 }
