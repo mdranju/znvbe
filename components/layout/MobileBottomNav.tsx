@@ -47,28 +47,35 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 pb-safe">
-      <nav className="flex justify-around items-center h-16 px-2">
+    <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50">
+      <nav className="flex justify-around items-center h-20 bg-white/80 backdrop-blur-3xl border border-black/5 rounded-[2.5rem] shadow-2xl px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const activeClass = item.isActive ? "text-black" : "text-gray-400 hover:text-gray-600";
+          const activeClass = item.isActive ? "text-blue-600" : "text-[#0B1221]/30 hover:text-[#0B1221]";
           
           return (
             <Link
               key={item.name}
               href={item.href}
               onClick={item.onClick}
-              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${activeClass}`}
+              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-500 scale-95 hover:scale-100 ${activeClass}`}
             >
               <div className="relative">
-                <Icon size={22} className={item.isActive ? "stroke-[2.5px]" : "stroke-2"} />
+                <Icon 
+                  size={20} 
+                  className={`transition-all duration-500 ${item.isActive ? "stroke-[2.5px] -translate-y-1" : "stroke-[1.5px]"}`} 
+                />
                 {item.badge !== null && item.badge !== undefined && (
-                  <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-pink-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-white">
+                  <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-blue-600 text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white shadow-xl">
                     {item.badge > 99 ? "99+" : item.badge}
                   </span>
                 )}
+                {/* Active Indicator Dot */}
+                {item.isActive && (
+                  <div className="absolute -bottom-1 left-1.5 w-1 h-1 bg-current rounded-full" />
+                )}
               </div>
-              <span className={`text-[10px] font-medium ${item.isActive ? "font-bold" : ""}`}>
+              <span className={`text-[9px] font-black uppercase tracking-widest transition-opacity ${item.isActive ? "opacity-100" : "opacity-40"}`}>
                 {item.name}
               </span>
             </Link>

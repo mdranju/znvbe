@@ -43,94 +43,124 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       )}
 
       {/* Sidebar */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-[300px] max-w-[85vw] bg-white z-50 transform transition-transform duration-300 ease-in-out flex flex-col lg:hidden ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+    <div 
+        className={`fixed top-0 left-0 h-full w-full max-w-[320px] bg-[#0B1221] z-[100] transform transition-transform duration-700 ease-out flex flex-col lg:hidden shadow-2xl ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <Link href="/" onClick={onClose} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center text-white font-bold text-xl">
+        {/* Header: Brand Identity */}
+        <div className="flex items-center justify-between p-8 border-b border-white/5 bg-[#0B1221]/80 backdrop-blur-xl">
+          <Link href="/" onClick={onClose} className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-blue-500/20 group-active:scale-90 transition-transform">
               b
             </div>
-            <span className="text-2xl font-bold tracking-tight">believers</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tighter text-white leading-none">
+                Believers.
+              </span>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mt-0.5">
+                Collection
+              </span>
+            </div>
           </Link>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <button 
+            onClick={onClose} 
+            className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"
+          >
             <X size={20} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto py-2">
-          <ul className="flex flex-col">
-            {categories.map((category) => {
-              const hasSubcategories = category.slug === 'panjabi';
-              const hasRightArrow = ['t-shirt', 'pant-trouser', 'attar', 'gadgets', 'sneakers', 'natural-foods', 'winter', 'combo-offers'].includes(category.slug);
-              const isExpanded = expandedCategories[category.slug];
+        {/* Content: Immersive Navigation */}
+        <div className="flex-1 overflow-y-auto py-8 px-6 custom-scrollbar space-y-8">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 px-2">
+              Departments
+            </p>
+            <ul className="space-y-1">
+              {categories.map((category) => {
+                const hasSubcategories = category.slug === "panjabi";
+                const isExpanded = expandedCategories[category.slug];
 
-              return (
-                <li key={category.id} className="border-b border-gray-50 last:border-0">
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <Link 
-                      href={`/category/${category.slug}`}
-                      onClick={onClose}
-                      className="flex-1 font-medium text-gray-800 hover:text-black"
-                    >
-                      {category.name}
-                    </Link>
-                    {hasSubcategories ? (
-                      <button 
-                        onClick={() => toggleCategory(category.slug)}
-                        className={`p-1 border rounded ${isExpanded ? 'bg-[#0B1221] text-white border-[#0B1221]' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                return (
+                  <li key={category.id} className="group">
+                    <div className="flex items-center justify-between rounded-2xl transition-all duration-300 group-hover:bg-white/5">
+                      <Link 
+                        href={`/products?category=${category.slug}`}
+                        onClick={onClose}
+                        className={`flex-1 px-4 py-3.5 font-bold text-sm tracking-tight transition-colors ${isExpanded ? "text-blue-500" : "text-white/70 group-hover:text-white"}`}
                       >
-                        {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </button>
-                    ) : hasRightArrow ? (
-                      <div className="p-1 border border-gray-200 rounded text-gray-300">
-                        <ChevronRight size={16} />
-                      </div>
-                    ) : null}
-                  </div>
-                  
-                  {/* Subcategories */}
-                  {hasSubcategories && isExpanded && (
-                    <ul className="bg-white py-2">
-                      {panjabiSubcategories.map((sub) => (
-                        <li key={sub.slug} className="border-b border-gray-50 last:border-0">
-                          <Link
-                            href={`/category/${sub.slug}`}
-                            onClick={onClose}
-                            className="block px-8 py-3 text-sm font-medium text-gray-800 hover:text-black hover:bg-gray-50"
-                          >
-                            {sub.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                        {category.name}
+                      </Link>
+                      
+                      {hasSubcategories && (
+                        <button 
+                          onClick={() => toggleCategory(category.slug)}
+                          className={`p-3 mr-1 rounded-xl transition-all ${isExpanded ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-white/20 hover:text-white hover:bg-white/5"}`}
+                        >
+                          <ChevronDown size={14} className={`transition-transform duration-500 ${isExpanded ? "" : "-rotate-90"}`} />
+                        </button>
+                      )}
+                    </div>
+                    
+                    {/* Seamless Subcategory Reveal */}
+                    {hasSubcategories && isExpanded && (
+                      <ul className="mt-2 ml-4 pl-4 border-l border-white/5 space-y-1 animate-in fade-in slide-in-from-left-4 duration-500">
+                        {panjabiSubcategories.map((sub) => (
+                          <li key={sub.slug}>
+                            <Link
+                              href={`/products?category=${sub.slug}`}
+                              onClick={onClose}
+                              className="block px-4 py-2.5 text-xs font-bold text-white/40 hover:text-blue-400 transition-colors uppercase tracking-widest"
+                            >
+                              {sub.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 px-2">
+              Support
+            </p>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { name: "Track Order", href: "/track-order" },
+                { name: "Store Finder", href: "/store-locations" },
+                { name: "Profile Settings", href: "/profile/settings" },
+              ].map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={onClose}
+                  className="px-6 py-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white hover:bg-blue-600 transition-all shadow-xl shadow-black/10 border border-white/5"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-100 bg-white space-y-3 pb-[80px]">
-          <Link 
-            href="/track-order" 
-            onClick={onClose}
-            className="block w-full bg-[#0B1221] text-white text-center py-3 rounded font-bold hover:bg-gray-800 transition-colors"
-          >
-            Track My Order
-          </Link>
-          <Link 
-            href="/about" 
-            onClick={onClose}
-            className="block w-full bg-[#0B1221] text-white text-center py-3 rounded font-bold hover:bg-gray-800 transition-colors"
-          >
-            Our Showroom
-          </Link>
+        {/* Footer: Legal & Versioning */}
+        <div className="p-8 border-t border-white/5 bg-[#0B1221]/80 backdrop-blur-xl">
+           <div className="flex items-center justify-between mb-4">
+              <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                 App Version 2.0.4
+              </span>
+              <span className="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em]">
+                 Secure Build
+              </span>
+           </div>
+           <p className="text-[9px] font-medium text-white/30 leading-relaxed">
+              &copy; 2026 Believers Group. <br /> All rights reserved.
+           </p>
         </div>
       </div>
     </>
