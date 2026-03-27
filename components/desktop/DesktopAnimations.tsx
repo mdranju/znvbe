@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect } from "react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -49,21 +49,25 @@ export function DesktopAnimations() {
         });
 
         // ── Product card stagger on scroll ──────────────────────
-        gsap.utils.toArray<HTMLElement>(".product-grid-desktop").forEach((grid) => {
-          const cards = grid.querySelectorAll<HTMLElement>(".product-card-desktop");
-          gsap.from(cards, {
-            scrollTrigger: {
-              trigger: grid,
-              start: "top 80%",
-              toggleActions: "play none none none",
-            },
-            y: 40,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: "power2.out",
+        gsap.utils
+          .toArray<HTMLElement>(".product-grid-desktop")
+          .forEach((grid) => {
+            const cards = grid.querySelectorAll<HTMLElement>(
+              ".product-card-desktop",
+            );
+            gsap.from(cards, {
+              scrollTrigger: {
+                trigger: grid,
+                start: "top 80%",
+                toggleActions: "play none none none",
+              },
+              y: 40,
+              opacity: 0,
+              duration: 0.6,
+              stagger: 0.08,
+              ease: "power2.out",
+            });
           });
-        });
 
         // ── Category grid stagger ──────────────────────────────
         gsap.from(".category-item-desktop", {
@@ -93,7 +97,9 @@ export function DesktopAnimations() {
             duration: 2,
             ease: "power2.out",
             onUpdate() {
-              el.textContent = Math.round(obj.val).toLocaleString() + (el.dataset.suffix ?? "");
+              el.textContent =
+                Math.round(obj.val).toLocaleString() +
+                (el.dataset.suffix ?? "");
             },
           });
         });
@@ -123,7 +129,7 @@ export function DesktopAnimations() {
         });
 
         // No need to return context.revert() here; mm.revert() handles it
-      }
+      },
     );
 
     return () => mm.revert();
