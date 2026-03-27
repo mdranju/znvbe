@@ -88,9 +88,10 @@ export default function ProductDetail({
   };
 
   const sizes = ["M", "L", "XL", "XXL"];
-  const images = product.images && product.images.length > 0 
-    ? product.images 
-    : [product.image];
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [product.image];
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-10 py-12 lg:py-20 bg-white/50 backdrop-blur-3xl min-h-screen">
@@ -153,15 +154,15 @@ export default function ProductDetail({
         </div>
 
         {/* Product Info */}
-        <div className="w-full lg:w-[45%] flex flex-col">
+        <div className="w-full lg:w-[50%] flex flex-col">
           <div className="flex items-center gap-4 mb-6">
-             <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase">
-                Product Details
+            <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase">
+              Product Details
             </p>
             <div className="h-px flex-1 bg-gray-100" />
           </div>
-          
-          <h1 className="text-4xl lg:text-6xl font-black text-[#0B1221] leading-[1.1] mb-6 tracking-tighter">
+
+          <h1 className="text-2xl lg:text-4xl font-black text-[#0B1221] leading-[1.1] mb-6 tracking-tighter">
             {product.name}
           </h1>
 
@@ -179,7 +180,7 @@ export default function ProductDetail({
           </div>
 
           <div className="flex items-baseline gap-5 mb-12">
-            <span className="text-5xl font-black text-[#0B1221] tracking-tighter">
+            <span className="text-3xl font-black text-[#0B1221] tracking-tighter">
               ৳{product.price}
             </span>
             {product.originalPrice && (
@@ -191,10 +192,12 @@ export default function ProductDetail({
 
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
-                <label className="text-[10px] font-black text-[#0B1221]/30 uppercase tracking-[0.3em]">
+              <label className="text-[10px] font-black text-[#0B1221]/30 uppercase tracking-[0.3em]">
                 Select Size
-                </label>
-                <button className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">Size Guide</button>
+              </label>
+              <button className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
+                Size Guide
+              </button>
             </div>
             <div className="flex flex-wrap gap-3">
               {sizes.map((size) => (
@@ -320,7 +323,7 @@ export default function ProductDetail({
                   <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
                     Our Collection
                   </p>
-                  <h2 className="text-4xl font-black text-gray-900 leading-none mb-6">
+                  <h2 className="text-3xl font-black text-gray-900 leading-none mb-6">
                     Premium <br /> {product.name}
                   </h2>
                   <p className="text-gray-500 font-medium leading-loose text-base">
