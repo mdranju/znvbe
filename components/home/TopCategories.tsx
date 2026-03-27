@@ -23,7 +23,7 @@ function TopCategories() {
   return (
     <>
       {/* ── Top Categories ──────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto w-full px-4 lg:px-6">
+      <section className="max-w-7xl mx-auto w-full px-4 lg:px-0">
         <div className="flex items-end justify-between mb-12">
           <div>
             <p className="text-blue-600 text-xs font-extrabold tracking-[0.2em] uppercase mb-2">
@@ -42,7 +42,7 @@ function TopCategories() {
             />
           </Link>
         </div>
-        <div className="category-grid-desktop grid lg:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-8 ">
+        <div className="category-grid-desktop grid lg:grid-cols-6 md:grid-cols-4 grid-cols-4 gap-4 lg:gap-8 lg:-mb-4">
           {categories.map((cat, i) => (
             <Link
               key={i}

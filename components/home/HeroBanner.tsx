@@ -42,7 +42,7 @@ function HeroBanner() {
   return (
     <>
       {/* ── Hero Banner ─────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto w-full px-4 lg:px-6">
+      <section className="max-w-7xl mx-auto w-full px-4 lg:px-0">
         <div className="relative w-full aspect-[21/10] md:aspect-[21/10]  rounded-[1.5rem] overflow-hidden lg:mt-12 mt-4 border border-white/10 group">
           {/* Ambient Inner Glow (Desktop) */}
           <div className="absolute inset-0 pointer-events-none  z-10 rounded-[1rem]" />
