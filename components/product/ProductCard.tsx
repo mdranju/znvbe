@@ -38,10 +38,8 @@ export function ProductCard({ product }: { product: any }) {
             </span>
           )}
         </div>
-        <Link href={`/product/${product.slug}`}>
-          <button className="w-full bg-[#0B1221] text-white text-xs font-bold py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 cursor-pointer uppercase tracking-widest shadow-lg shadow-black/5 hover:shadow-blue-500/25">
-            View Details
-          </button>
+        <Link href={`/product/${product.slug}`} className="w-full block text-center bg-[#0B1221] text-white text-xs font-bold py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 cursor-pointer uppercase tracking-widest shadow-lg shadow-black/5 hover:shadow-blue-500/25">
+          View Details
         </Link>
       </div>
     </div>

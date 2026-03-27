@@ -40,10 +40,10 @@ export function CartSidebar({
         <div className="flex items-center justify-between p-8 border-b border-black/5">
           <div className="flex flex-col">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 mb-1">
-              Cart Overview
+              Your Cart
             </span>
             <h2 className="hero-display text-3xl tracking-tighter text-[#0B1221]">
-              Your Collection.
+              Shopping Cart.
             </h2>
           </div>
           <button
@@ -68,13 +68,13 @@ export function CartSidebar({
               </div>
               <div className="space-y-4">
                 <p className="hero-display text-2xl tracking-tighter text-[#0B1221]/40">
-                  Your archive is currently empty.
+                  Your cart is currently empty.
                 </p>
                 <button
                   onClick={onClose}
                   className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 hover:text-blue-500 transition-colors"
                 >
-                  Return to Store →
+                  Return to Shop →
                 </button>
               </div>
             </div>
@@ -103,7 +103,7 @@ export function CartSidebar({
                         <button
                           onClick={() => {
                             dispatch(removeFromCart({ id: item.id, size: item.size }));
-                            toast.info("Item Removed", { description: "Archived item has been released." });
+                            toast.info("Item Removed", { description: "The item has been removed from your cart." });
                           }}
                           className="text-[#0B1221]/20 hover:text-red-500 transition-colors"
                         >
@@ -162,7 +162,7 @@ export function CartSidebar({
             <div className="flex justify-between items-end px-2">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1221]/30">
-                  Total Value
+                  Total Amount
                 </span>
                 <span className="hero-display text-3xl tracking-tighter text-[#0B1221]">
                   ৳{cartItems.reduce((total, item) => total + item.price * item.quantity, 0)}
@@ -178,11 +178,11 @@ export function CartSidebar({
               onClick={onClose}
               className="btn-glow block w-full bg-[#0B1221] text-white text-center py-5 rounded-[22px] text-xs font-black uppercase tracking-[0.4em] hover:bg-black transition-all shadow-2xl shadow-black/20 border border-white/5 active:scale-[0.98]"
             >
-              Initiate Checkout
+              Checkout
             </Link>
 
             <p className="text-[9px] font-medium text-center text-[#0B1221]/30 uppercase tracking-[0.2em] px-8 leading-relaxed">
-              Securely processed for believers worldwide. <br /> Express shipping guaranteed.
+              Secure checkout. <br /> Fast and reliable shipping.
             </p>
           </div>
         )}
