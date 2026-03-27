@@ -13,7 +13,7 @@ export default function Home() {
       {/* GSAP animations — desktop only, pure side-effect */}
       <DesktopAnimations />
 
-      <div className="flex flex-col lg:gap-12 gap-8 pb-12">
+      <div className="flex flex-col lg:gap-12 gap-8 lg:pb-12 pb-20 ">
         {/* ── Hero Banner ─────────────────────────────────────── */}
         <HeroBanner />
 
