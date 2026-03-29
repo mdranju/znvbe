@@ -18,7 +18,9 @@ export function ProductCard({ product }: { product: any }) {
         <Image
           src={product.image}
           alt={product.name}
-          fill
+          // fill
+          width={1000}
+          height={1000}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

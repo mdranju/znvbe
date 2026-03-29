@@ -51,7 +51,8 @@ function TopCategories() {
             >
               <div className="w-full aspect-square lg:rounded-[1.5rem] rounded-[1rem] overflow-hidden bg-gray-50 border border-gray-100 relative mb-4 transition-all duration-500 group-hover:shadow-[0_30px_60px_-15px_rgba(59,130,246,0.3)] group-hover:-translate-y-2">
                 <Image
-                  fill
+                  width={500}
+                  height={500}
                   src={cat.img}
                   alt={cat.name}
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
