@@ -1,3 +1,4 @@
+"use client";
 import { BackButton } from "@/components/common/BackButton";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
