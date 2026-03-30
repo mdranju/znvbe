@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Avlora Wear",
     images: [
       {
-        url: "https://avlorawear.vercel.app/banner.png",
+        url: "https://avlorawear.vercel.app/white-color-domain.png",
         width: 1200,
         height: 630,
         alt: "Avlora Wear - Premium Fashion Banner",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     title: "Avlora Wear - Premium Quality Apparel",
     description:
       "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    images: ["https://avlorawear.vercel.app/banner.png"],
+    images: ["https://avlorawear.vercel.app/white-color-domain.png"],
     creator: "@avlorawear",
   },
   icons: {

@@ -88,7 +88,7 @@ export default function LoginPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-40 transition duration-1000"></div>
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
-                src="/login_3d_illustration_1774910430950.png"
+                src="/login.png"
                 alt="Avlora Wear Authentication"
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
