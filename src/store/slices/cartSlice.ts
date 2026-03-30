@@ -7,6 +7,7 @@ export interface CartItem {
   originalPrice?: number;
   image: string;
   size: string;
+  color?: string;
   quantity: number;
 }
 
@@ -33,9 +34,14 @@ const cartSlice = createSlice({
   reducers: {
     addToCart(state, action: PayloadAction<CartItem>) {
       const newItem = action.payload;
-      // Unique product in cart means same ID && same size
-      const existingItem = state.items.find(item => item.id === newItem.id && item.size === newItem.size);
-      
+      // Unique product in cart means same ID && same size && same color
+      const existingItem = state.items.find(
+        (item) =>
+          item.id === newItem.id &&
+          item.size === newItem.size &&
+          item.color === newItem.color,
+      );
+
       if (existingItem) {
         existingItem.quantity += newItem.quantity;
       } else {
@@ -43,15 +49,38 @@ const cartSlice = createSlice({
       }
       calculateTotals(state);
     },
-    removeFromCart(state, action: PayloadAction<{ id: string | number; size: string }>) {
+    removeFromCart(
+      state,
+      action: PayloadAction<{
+        id: string | number;
+        size: string;
+        color?: string;
+      }>,
+    ) {
       state.items = state.items.filter(
-        item => !(item.id === action.payload.id && item.size === action.payload.size)
+        (item) =>
+          !(
+            item.id === action.payload.id &&
+            item.size === action.payload.size &&
+            item.color === action.payload.color
+          ),
       );
       calculateTotals(state);
     },
-    updateQuantity(state, action: PayloadAction<{ id: string | number; size: string; quantity: number }>) {
+    updateQuantity(
+      state,
+      action: PayloadAction<{
+        id: string | number;
+        size: string;
+        color?: string;
+        quantity: number;
+      }>,
+    ) {
       const item = state.items.find(
-        i => i.id === action.payload.id && i.size === action.payload.size
+        (i) =>
+          i.id === action.payload.id &&
+          i.size === action.payload.size &&
+          i.color === action.payload.color,
       );
       if (item && action.payload.quantity > 0) {
         item.quantity = action.payload.quantity;

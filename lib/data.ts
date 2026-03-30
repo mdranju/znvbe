@@ -1,3 +1,5 @@
+import { Lock, MapPin, Settings, ShoppingBag } from "lucide-react";
+
 export const categories = [
   { id: "1", name: "Panjabi", slug: "panjabi" },
   { id: "2", name: "Luxury Panjabi", slug: "luxury-panjabi" },
@@ -41,6 +43,38 @@ export const heroSlides = [
   { id: 6, image: "/banner.png", alt: "Avlora Wear Banner" },
 ];
 
+export const profileActions = [
+  {
+    name: "My Orders",
+    href: "/profile/orders",
+    icon: ShoppingBag,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  {
+    name: "My Addresses",
+    href: "/profile/addresses",
+    icon: MapPin,
+    color: "text-green-600",
+    bg: "bg-green-50",
+  },
+  {
+    name: "Change Password",
+    href: "/profile/password",
+    icon: Lock,
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+  {
+    name: "Settings",
+    href: "/profile/settings",
+    icon: Settings,
+    color: "text-gray-600",
+    bg: "bg-gray-100",
+    mobileOnly: true,
+  },
+];
+
 export const products = [
   {
     id: "1",
@@ -55,82 +89,26 @@ export const products = [
     description:
       "This is a premium quality panjabi made with the best materials. It is very comfortable to wear and looks great. It is perfect for any occasion.",
     details: [
-      {
-        name: "Color",
-        value: "Red",
-      },
-      {
-        name: "Size",
-        value: "M",
-      },
-      {
-        name: "Material",
-        value: "Cotton",
-      },
-      {
-        name: "Wash Care",
-        value: "Machine Wash",
-      },
+      { name: "Brand", value: "Avlora Wear" },
+      { name: "Collection", value: "As-Shabab" },
+      { name: "Color", value: "Crimson Red" },
+      { name: "Material", value: "Premium 100% Cotton" },
+      { name: "Weight", value: "Medium Weight" },
+      { name: "Wash Care", value: "Cold Machine Wash Only" },
     ],
     sizes: [
-      {
-        name: "S",
-        inStock: true,
-        stock: 10,
-        sku: "SKU-PJ001-S",
-      },
-      {
-        name: "M",
-        inStock: true,
-        stock: 10,
-        sku: "SKU-PJ002-M",
-      },
-      {
-        name: "L",
-        inStock: true,
-        stock: 10,
-        sku: "SKU-PJ003-L",
-      },
-      {
-        name: "XL",
-        inStock: true,
-        stock: 10,
-        sku: "SKU-PJ004-XL",
-      },
-      {
-        name: "XXL",
-        inStock: true,
-        stock: 10,
-        sku: "SKU-PJ005-XXL",
-      },
+      { name: "S", inStock: true, stock: 15, sku: "AV-AS-RED-S" },
+      { name: "M", inStock: true, stock: 42, sku: "AV-AS-RED-M" },
+      { name: "L", inStock: true, stock: 0, sku: "AV-AS-RED-L" },
+      { name: "XL", inStock: true, stock: 28, sku: "AV-AS-RED-XL" },
+      { name: "XXL", inStock: true, stock: 5, sku: "AV-AS-RED-XXL" },
     ],
     colors: [
-      {
-        name: "Red",
-        value: "#FF0000",
-      },
-      {
-        name: "Green",
-        value: "#00FF00",
-      },
-      {
-        name: "Blue",
-        value: "#0000FF",
-      },
-      {
-        name: "Yellow",
-        value: "#FFFF00",
-      },
-      {
-        name: "Black",
-        value: "#000000",
-      },
-      {
-        name: "White",
-        value: "#FFFFFF",
-      },
+      { name: "Ruby Red", value: "#A81D23" },
+      { name: "Midnight Black", value: "#1A1A1A" },
+      { name: "Royal Navy", value: "#1D2B4A" },
+      { name: "Emerald Green", value: "#006B3E" },
     ],
-
     inStock: true,
   },
   {
