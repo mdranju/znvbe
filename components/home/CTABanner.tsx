@@ -31,6 +31,7 @@ function CTABanner() {
           <Link
             href="/products"
             className="btn-glow inline-flex items-center gap-4 bg-white text-[#0B1221] px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-[11px] md:text-[13px] transition-all hover:scale-105 shadow-2xl uppercase tracking-[0.2em] group/btn active:scale-95"
+            aria-label="View our new Eid Collection 2026"
           >
             View Collection
             <div className="w-8 h-8 rounded-full bg-[#0B1221] flex items-center justify-center text-white group-hover/btn:translate-x-1 transition-transform">

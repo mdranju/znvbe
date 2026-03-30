@@ -29,8 +29,9 @@ function BannerSection({
       <div className="relative w-full aspect-[21/9] md:aspect-[21/6] bg-[#0B1221] lg:rounded-[2.5rem] rounded-[1.5rem] overflow-hidden group shadow-2xl mb-12 border border-white/5">
         <Image
           src={img}
-          alt={title}
+          alt={`Promotional banner for ${title}`}
           fill
+          sizes="(max-width: 1024px) 100vw, 1280px"
           className="object-cover opacity-60 transition-transform duration-[2s] ease-out group-hover:scale-110"
         />
 
@@ -60,9 +61,10 @@ function BannerSection({
             <Link
               href={`/products?category=${category.toLowerCase()?.replace(" ", "-")}`}
               className="btn-glow inline-flex items-center gap-4 bg-white text-[#0B1221] px-10 md:px-14 py-4 md:py-6 rounded-full font-black text-[10px] md:text-[12px] transition-all hover:scale-105 shadow-[0_20px_50px_rgba(255,255,255,0.2)] uppercase tracking-[0.2em] group/btn active:scale-95"
+              aria-label={`Explore more from ${title}`}
             >
               Explore More
-              <div className="w-8 h-8 rounded-full bg-[#0B1221] flex items-center justify-center text-white group-hover/btn:translate-x-1 transition-transform">
+              <div className="w-8 h-8 rounded-full bg-[#0B1221] flex items-center justify-center text-white group-hover/btn:translate-x-1 transition-transform" aria-hidden="true">
                 <svg
                   width="14"
                   height="14"

@@ -67,33 +67,42 @@ function HeroBanner() {
             className="w-full h-full hero-swiper"
           >
             {/* Premium Navigation Arrows */}
-            <div className="swiper-button-prev-custom absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0">
+            <div 
+              className="swiper-button-prev-custom absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
+              aria-label="Previous slide"
+              role="button"
+            >
               <IoIosArrowBack
                 size={24}
                 className="group-hover/btn:-translate-x-1 transition-transform duration-300"
               />
             </div>
-            <div className="swiper-button-next-custom absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0">
+            <div 
+              className="swiper-button-next-custom absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
+              aria-label="Next slide"
+              role="button"
+            >
               <IoIosArrowForward
                 size={24}
                 className="group-hover/btn:translate-x-1 transition-transform duration-300"
               />
             </div>
 
-            {heroSlides.map((slide) => (
+            {heroSlides.map((slide, index) => (
               <SwiperSlide key={slide.id}>
                 <div className="relative w-full h-full overflow-hidden">
                   <Image
                     src={slide.image}
-                    alt={slide.alt}
+                    alt={slide.alt || `Product showcase ${index + 1}`}
                     width={1920}
                     height={900}
                     className="object-cover h-full w-full"
-                    priority={slide.id === 1}
+                    priority={index === 0}
+                    sizes="100vw"
                   />
                   {/* Multi-layered Premium Gradients */}
-                  <div className="absolute inset-0  to-transparent pointer-events-none" />
-                  <div className="absolute inset-0  to-transparent pointer-events-none w-full lg:w-3/4" />
+                  <div className="absolute inset-0 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 to-transparent pointer-events-none w-full lg:w-3/4" />
                 </div>
               </SwiperSlide>
             ))}
