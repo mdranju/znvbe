@@ -3,21 +3,21 @@ import { MapPin, Phone, Clock, Navigation } from "lucide-react";
 
 const STORES = [
   {
-    name: "Believers - Mirpur 10",
+    name: "Avlora Wear - Mirpur 10",
     address: "House 12, Road 5, Mirpur 10 Circle, Dhaka - 1216",
     phone: "01799-301290",
     hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Believers - Mohakhali",
+    name: "Avlora Wear - Mohakhali",
     address: "Level 3, Block A, Mohakhali DOHS, Dhaka - 1212",
     phone: "09638-090000",
     hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Believers - Chittagong",
+    name: "Avlora Wear - Chittagong",
     address: "GEC Circle, Khulshi, Chittagong - 4225",
     phone: "09638-090000",
     hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",

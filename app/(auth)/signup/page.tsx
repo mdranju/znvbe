@@ -126,7 +126,7 @@ export default function SignupPage() {
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
                 src="https://picsum.photos/seed/signuplight/800/1000"
-                alt="Believers Membership"
+                alt="Avlora Wear Membership"
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -136,7 +136,7 @@ export default function SignupPage() {
                   Join Us
                 </p>
                 <h2 className="hero-display text-[#0B1221] text-5xl mb-2">
-                  Become a <br /> Believer.
+                  Join <br /> Avlora Wear.
                 </h2>
               </div>
             </div>

@@ -83,7 +83,7 @@ export default function LoginPage() {
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
                 src="https://picsum.photos/seed/loginlight/800/1000"
-                alt="Believers Brand"
+                alt="Avlora Wear Brand"
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -93,7 +93,7 @@ export default function LoginPage() {
                   User Login
                 </p>
                 <h2 className="hero-display text-[#0B1221] text-5xl mb-2">
-                  Welcome to <br /> Believers.
+                  Welcome to <br /> Avlora Wear.
                 </h2>
               </div>
             </div>

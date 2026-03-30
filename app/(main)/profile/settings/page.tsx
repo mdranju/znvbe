@@ -161,7 +161,7 @@ export default function SettingsPage() {
                             Call Us
                         </a>
                         <a
-                            href="mailto:cc.believerssign@gmail.com"
+                            href="mailto:contact@avlorawear.com"
                             className="px-10 py-5 bg-white/10 border border-white/10 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white/20 transition-all text-center backdrop-blur-3xl"
                         >
                             Email Us

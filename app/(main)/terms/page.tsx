@@ -24,14 +24,14 @@ export default function TermsPage() {
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
           <div className="prose prose-lg max-w-none text-gray-600">
             <p className="text-xl font-medium text-[#0B1221] leading-relaxed mb-12 pb-10 border-b border-gray-100">
-              Welcome to Believers Sign. These terms and conditions outline the rules and regulations for the use of our website. By accessing this website, we assume you accept these terms.
+              Welcome to Avlora Wear. These terms and conditions outline the rules and regulations for the use of our website. By accessing this website, we assume you accept these terms.
             </p>
 
             <div className="grid gap-12 text-base leading-loose">
               {[
                 { 
                   title: "1. Acceptance of Terms", 
-                  content: "Do not continue to use Believers Sign if you do not agree to take all of the terms and conditions stated on this page." 
+                  content: "Do not continue to use Avlora Wear if you do not agree to take all of the terms and conditions stated on this page." 
                 },
                 { 
                   title: "2. Privacy Policy", 
@@ -55,7 +55,7 @@ export default function TermsPage() {
                 },
                 { 
                   title: "7. Intellectual Property", 
-                  content: "All content included on this site, such as text, graphics, logos, images, and software, is the property of Believers Sign or its content suppliers and protected by international copyright laws." 
+                  content: "All content included on this site, such as text, graphics, logos, images, and software, is the property of Avlora Wear or its content suppliers and protected by international copyright laws." 
                 }
               ].map((section, idx) => (
                 <div key={idx} className="relative group">

@@ -151,7 +151,7 @@ export default function TrackOrderPage() {
             <div className="mt-12 text-center">
               <p className="text-[9px] font-black text-[#0B1221]/20 uppercase tracking-[0.4em] leading-relaxed">
                 Secure Delivery Tracking <br />
-                Managed by Believers
+                Managed by Avlora Wear
               </p>
             </div>
           </div>

@@ -24,7 +24,7 @@ export default function RefundPage() {
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
           <div className="prose prose-lg max-w-none text-gray-600">
             <p className="text-xl font-medium text-[#0B1221] leading-relaxed mb-12 pb-10 border-b border-gray-100">
-              At Believers Sign, we strive to ensure that you are completely satisfied with your purchase. If for any reason you are not satisfied, we offer a straightforward return and refund policy.
+              At Avlora Wear, we strive to ensure that you are completely satisfied with your purchase. If for any reason you are not satisfied, we offer a straightforward return and refund policy.
             </p>
 
             <div className="space-y-12">
@@ -52,7 +52,7 @@ export default function RefundPage() {
               <section className="border-l-4 border-gray-200 pl-6 my-8">
                 <h2 className="text-xl font-bold text-[#0B1221] mt-0 mb-3">3. How to Initiate a Return</h2>
                 <p className="text-base leading-loose m-0 text-gray-600">
-                  Contact our customer service team at <a href="mailto:cc.believerssign@gmail.com" className="text-blue-600 font-bold no-underline">cc.believerssign@gmail.com</a> with your order number and details. We will respond quickly with instructions.
+                  Contact our customer service team at <a href="mailto:contact@avlorawear.com" className="text-blue-600 font-bold no-underline">contact@avlorawear.com</a> with your order number and details. We will respond quickly with instructions.
                 </p>
               </section>
 

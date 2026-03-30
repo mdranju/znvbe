@@ -17,7 +17,7 @@ export default function AboutPage() {
             Discover
           </p>
           <h1 className="hero-display text-4xl md:text-6xl text-white uppercase tracking-tighter animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-            About Believers.
+            About Avlora Wear.
           </h1>
         </div>
       </div>
@@ -27,17 +27,16 @@ export default function AboutPage() {
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
           <div className="prose prose-lg sm:prose-xl max-w-none text-gray-600">
             <p className="text-lg sm:text-2xl font-medium text-[#0B1221] leading-relaxed mb-10">
-              Believers Sign is one of the largest Islamic Lifestyle brands in
-              Bangladesh. We started our journey in 2018 with a vision to provide
-              high-quality, modest, and stylish clothing for the modern Muslim.
+              Avlora Wear is a premier fashion brand dedicated to high-quality apparel. 
+              We started our journey with a vision to provide exceptional style, modest silhouettes, 
+              and premium comfort for the modern fashion enthusiast.
             </p>
 
             <p className="leading-loose mb-12">
-              Our product line includes premium Panjabis, Thobes, Shirts, T-shirts,
-              Polo Shirts, Pants, Trousers, Attars, Gadgets, Perfumes, Sneakers,
-              Natural Foods, Tupis, and Winter collections. We carefully source our
-              materials and ensure the highest standards of craftsmanship in every
-              product we offer.
+              Our collection features premium Panjabis, Thobes, Shirts, T-shirts,
+              Polo Shirts, and specialized attire for every season. We meticulously 
+              source the finest materials and maintain a standard of craftsmanship that 
+              ensures longevity, luxury, and confidence in every garment.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-8 my-16">
@@ -46,9 +45,9 @@ export default function AboutPage() {
                   Our Mission
                 </h2>
                 <p className="text-sm leading-relaxed m-0 text-gray-700">
-                  To inspire and empower individuals to embrace an Islamic lifestyle
-                  with confidence and elegance, by offering premium quality products
-                  that blend tradition with contemporary fashion.
+                  To inspire and empower individuals through fashion that reflects 
+                  their personality and values, by offering premium quality apparel 
+                  that seamlessly blends traditional elegance with contemporary design.
                 </p>
               </div>
               <div className="bg-orange-50/50 p-8 rounded-[2rem] border border-orange-100/50 hover:shadow-xl transition-shadow duration-500">
@@ -56,9 +55,9 @@ export default function AboutPage() {
                   Our Vision
                 </h2>
                 <p className="text-sm leading-relaxed m-0 text-gray-700">
-                  To become the leading global brand for Islamic lifestyle products,
-                  recognized for our commitment to quality, authenticity, and customer
-                  satisfaction.
+                  To become a leading global fashion destination, recognized for our 
+                  unwavering commitment to quality, innovative design, and complete 
+                  customer satisfaction.
                 </p>
               </div>
             </div>

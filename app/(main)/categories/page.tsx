@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 export const metadata = {
-  title: "All Categories | Believers",
-  description: "Browse all product categories at Believers.",
+  title: "All Categories | Avlora Wear",
+  description: "Browse all product categories at Avlora Wear.",
 };
 
 export default function CategoriesPage() {
@@ -78,7 +78,7 @@ export default function CategoriesPage() {
         <div className="mt-40 pt-20 border-t border-black/5 flex flex-col items-center">
             <div className="w-px h-24 bg-gradient-to-b from-blue-600 to-transparent opacity-30 mb-12" />
             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-[#0B1221]/20 text-center px-12 leading-relaxed">
-                Believers Global Shopping. <br /> Secure Shopping Active.
+                Avlora Wear Worldwide. <br /> Secure Shopping Active.
             </p>
         </div>
       </div>

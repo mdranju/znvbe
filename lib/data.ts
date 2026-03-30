@@ -24,17 +24,29 @@ export const products = [
     price: 1350,
     originalPrice: 1890,
     category: "panjabi",
-    // image: "https://picsum.photos/seed/panjabi1/1000/1000",
     image: "/template-1.jpg",
-    images: [
-      // "https://picsum.photos/seed/panjabi1/1000/1000",
-      // "https://picsum.photos/seed/panjabi1-2/1000/1000",
-      // "https://picsum.photos/seed/panjabi1-3/1000/1000",
-      "/template-1.jpg",
-      "/template-2.jpg",
-      "/template-3.jpg",
-    ],
+    images: ["/template-1.jpg", "/template-2.jpg", "/template-3.jpg"],
     badge: "540 Flat",
+    description:
+      "This is a premium quality panjabi made with the best materials. It is very comfortable to wear and looks great. It is perfect for any occasion.",
+    details: [
+      {
+        name: "Color",
+        value: "Red",
+      },
+      {
+        name: "Size",
+        value: "M",
+      },
+      {
+        name: "Material",
+        value: "Cotton",
+      },
+      {
+        name: "Wash Care",
+        value: "Machine Wash",
+      },
+    ],
     sizes: [
       {
         name: "S",

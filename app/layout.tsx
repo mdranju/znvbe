@@ -15,8 +15,24 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "Believers - Islamic Lifestyle Brand",
-  description: "One of the largest Islamic Lifestyle brands in Bangladesh",
+  title: "Avlora Wear - Premium Quality Apparel",
+  description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+  metadataBase: new URL("https://avlorawear.com"),
+  openGraph: {
+    title: "Avlora Wear - Premium Quality Apparel",
+    description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+    url: "https://avlorawear.com",
+    siteName: "Avlora Wear",
+    images: [{ url: "/banner.jpg", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Avlora Wear - Premium Quality Apparel",
+    description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+    images: ["/banner.jpg"],
+  },
 };
 
 export default function RootLayout({

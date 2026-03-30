@@ -16,9 +16,8 @@ export function Footer() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/10 via-transparent to-transparent opacity-40" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-600/30 to-transparent" />
 
-      {/* Ghosted Branding */}
-      <div className="absolute -bottom-10 -left-10 text-[20rem] font-black text-white/[0.02] leading-none select-none pointer-events-none tracking-tighter">
-        BELIEVERS.
+      <div className="absolute -bottom-10 -left-8 text-[20rem] font-black text-white/[0.02] leading-none select-none pointer-events-none tracking-tighter">
+        AVLORA.
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
@@ -27,12 +26,12 @@ export function Footer() {
           <div className="space-y-10">
             <Link href="/" className="inline-block group">
               <div className="relative w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#0B1221] font-black text-4xl transition-all duration-700 group-hover:scale-110 group-hover:rotate-6 shadow-2xl shadow-white/10">
-                B
+                A
                 <div className="absolute -inset-2 bg-white/10 blur-xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-700 -z-10" />
               </div>
             </Link>
             <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] leading-relaxed max-w-[240px]">
-              Premium Islamic Lifestyle. <br />
+              Premium Luxury Apparel. <br />
               Established Excellence in <br />
               Dhaka, Bangladesh.
             </p>
@@ -128,7 +127,7 @@ export function Footer() {
 
               <div className="space-y-6">
                 <a
-                  href="mailto:cc.believerssign@gmail.com"
+                  href="mailto:contact@avlorawear.com"
                   className="flex items-center gap-4 group/link"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 group-hover/link:bg-blue-600 group-hover/link:text-white transition-all duration-500">
@@ -136,7 +135,7 @@ export function Footer() {
                   </div>
                   <span className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em] group-hover/link:text-white transition-colors">
                     {" "}
-                    cc.believerssign@gmail.com
+                    contact@avlorawear.com
                   </span>
                 </a>
 
@@ -163,8 +162,7 @@ export function Footer() {
             </p>
           </div>
           <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em]">
-            &copy; {new Date().getFullYear()} BELIEVERS GLOBAL. ALL RIGHTS
-            RESERVED.
+            &copy; {new Date().getFullYear()} AVLORA WEAR. ALL RIGHTS RESERVED.
           </p>
           <div className="flex gap-8">
             {["Secure Payment", "Certified Quality", "Worldwide Delivery"].map(

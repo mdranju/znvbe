@@ -35,7 +35,7 @@ const heroSlides = [
     image: "https://picsum.photos/seed/hero7/1920/900",
     alt: "New Season 5",
   },
-  { id: 6, image: "/banner.jpg", alt: "Believers Banner" },
+  { id: 6, image: "/banner.jpg", alt: "Avlora Wear Banner" },
 ];
 
 function HeroBanner() {
@@ -107,7 +107,7 @@ function HeroBanner() {
                 New Season · 2026
               </p>
               <h1 className="hero-text-line hero-display text-white text-6xl xl:text-7xl mb-6 opacity-0 shadow-2xl leading-[1.1]">
-                Believers
+                Avlora Wear
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
                   Premium Collection

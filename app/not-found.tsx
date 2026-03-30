@@ -73,7 +73,7 @@ export default function NotFound() {
         {/* ── Branding Footer ─────────────────────────────────── */}
         <div className="mt-24 pointer-events-none transition-opacity duration-1000">
            <p className="text-[#0B1221]/10 text-[8px] md:text-[9px] font-black tracking-[1.2em] uppercase">
-             Believers Essential · 2026
+             Avlora Wear · 2026
            </p>
            <div className="mt-5 flex justify-center items-center gap-4">
              <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#0B1221]/10 to-transparent" />

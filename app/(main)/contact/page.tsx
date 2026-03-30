@@ -6,7 +6,7 @@ import { Phone, Mail, MapPin, Clock, CheckCircle } from "lucide-react";
 
 const CONTACT_INFO = [
   { icon: Phone, label: "Call Us", value: "09638-090000", href: "tel:09638090000" },
-  { icon: Mail, label: "Email Us", value: "cc.believerssign@gmail.com", href: "mailto:cc.believerssign@gmail.com" },
+  { icon: Mail, label: "Email Us", value: "contact@avlorawear.com", href: "mailto:contact@avlorawear.com" },
   { icon: MapPin, label: "Headquarters", value: "Mohakhali DOHS, Dhaka", href: null },
   { icon: Clock, label: "Support Hours", value: "Sat–Thu: 10AM–9PM", href: null },
 ];

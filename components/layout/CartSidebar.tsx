@@ -62,12 +62,13 @@ export function CartSidebar({
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <div className="relative w-64 h-64 grayscale opacity-20">
+              <div className="relative w-64 h-64 grayscale opacity-20 ">
                 <Image
-                  src="https://picsum.photos/seed/emptycollection/400/400"
+                  src="https://images.unsplash.com/photo-1526632503813-6f479409d7bf?q=80&w=796&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Empty Collection"
-                  fill
-                  className="object-contain"
+                  width={400}
+                  height={400}
+                  className="object-cover w-full h-full rounded-2xl "
                 />
               </div>
               <div className="space-y-4">

@@ -52,11 +52,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <div className="flex items-center justify-between p-8 border-b border-white/5 bg-[#0B1221]/80 backdrop-blur-xl">
           <Link href="/" onClick={onClose} className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-blue-500/20 group-active:scale-90 transition-transform">
-              b
+              A
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-tighter text-white leading-none">
-                Believers.
+                Avlora Wear.
               </span>
               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mt-0.5">
                 Collection
@@ -159,7 +159,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               </span>
            </div>
            <p className="text-[9px] font-medium text-white/30 leading-relaxed">
-              &copy; 2026 Believers Group. <br /> All rights reserved.
+              &copy; 2026 Avlora Wear Group. <br /> All rights reserved.
            </p>
         </div>
       </div>
