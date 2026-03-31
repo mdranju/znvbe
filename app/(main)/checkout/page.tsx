@@ -1,6 +1,10 @@
 "use client";
 
-import { clearCart, removeFromCart, updateQuantity } from "@/src/store/slices/cartSlice";
+import {
+  clearCart,
+  removeFromCart,
+  updateQuantity,
+} from "@/src/store/slices/cartSlice";
 import { RootState } from "@/src/store/store";
 import { useAddresses, Address } from "@/hooks/useAddresses";
 import Image from "next/image";
@@ -39,7 +43,9 @@ export default function CheckoutPage() {
   const [showSavedAddresses, setShowSavedAddresses] = useState(true);
   const [useNewAddress, setUseNewAddress] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Redirect if cart becomes empty during interaction
   useEffect(() => {
@@ -263,7 +269,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc]/50 py-12 lg:py-20">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <form
           onSubmit={handlePlaceOrder}
           className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
@@ -390,12 +396,16 @@ export default function CheckoutPage() {
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group space-y-2.5">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.firstName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.firstName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     First Name *
                   </label>
                   <input
                     value={form.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("firstName", e.target.value)
+                    }
                     placeholder="Enter First Name"
                     type="text"
                     className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.firstName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
@@ -403,12 +413,16 @@ export default function CheckoutPage() {
                   {renderError("firstName")}
                 </div>
                 <div className="group space-y-2.5">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.lastName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.lastName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     Last Name *
                   </label>
                   <input
                     value={form.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("lastName", e.target.value)
+                    }
                     placeholder="Enter Last Name"
                     type="text"
                     className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.lastName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
@@ -433,13 +447,17 @@ export default function CheckoutPage() {
               </div>
 
               <div className="group space-y-2.5">
-                <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.street ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.street ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Street Address *
                 </label>
                 <div className="space-y-4">
                   <input
                     value={form.street}
-                    onChange={(e) => handleInputChange("street", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("street", e.target.value)
+                    }
                     type="text"
                     placeholder="House number and street name"
                     className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.street ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
@@ -459,7 +477,9 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group space-y-2.5">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.city ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.city ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     Town / City *
                   </label>
                   <input
@@ -472,13 +492,17 @@ export default function CheckoutPage() {
                   {renderError("city")}
                 </div>
                 <div className="group space-y-2.5">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     District *
                   </label>
                   <div className="relative">
                     <select
                       value={form.district}
-                      onChange={(e) => handleInputChange("district", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("district", e.target.value)
+                      }
                       className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] appearance-none ${validationErrors.district ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
                     >
                       <option value="" selected disabled>
@@ -507,7 +531,9 @@ export default function CheckoutPage() {
                   <div className="space-y-1.5">
                     <input
                       value={form.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
                       placeholder="Phone Number"
                       type="tel"
                       className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.phone ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
@@ -517,7 +543,9 @@ export default function CheckoutPage() {
                   <div className="space-y-1.5">
                     <input
                       value={form.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       placeholder="Email Address"
                       type="email"
                       className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.email ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}

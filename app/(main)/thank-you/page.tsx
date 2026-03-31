@@ -1,7 +1,13 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { ArrowRight, CheckCircle, ShoppingBag, Truck, Home } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  ShoppingBag,
+  Truck,
+  Home,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -86,7 +92,7 @@ export default function ThankYouPage() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* 2. Delivery Info */}
           <div className="glass-card bg-blue-600 p-10 lg:p-16 rounded-[4rem] text-white flex flex-col md:flex-row items-center gap-10 shadow-2xl shadow-blue-500/20 animate-in slide-in-from-bottom-12 duration-1000 overflow-hidden relative group">
@@ -228,7 +234,7 @@ export default function ThankYouPage() {
               />
               <span className="relative z-10">Continue Shopping</span>
             </Link>
-            
+
             <Link
               href="/"
               className="group relative h-20 bg-white border border-black/5 text-[#0B1221] rounded-[2rem] font-black text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 overflow-hidden transition-all hover:bg-gray-50 hover:shadow-2xl hover:shadow-black/5"

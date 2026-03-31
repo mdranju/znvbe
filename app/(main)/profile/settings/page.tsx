@@ -77,7 +77,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-start relative">
           <ProfileSidebar />
 
