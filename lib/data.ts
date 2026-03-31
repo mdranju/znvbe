@@ -1,21 +1,161 @@
 import { Lock, MapPin, Settings, ShoppingBag } from "lucide-react";
 
 export const categories = [
-  { id: "1", name: "Panjabi", slug: "panjabi" },
-  { id: "2", name: "Luxury Panjabi", slug: "luxury-panjabi" },
-  { id: "3", name: "Thobe", slug: "thobe" },
-  { id: "4", name: "Shirt", slug: "shirt" },
-  { id: "5", name: "T-shirt", slug: "t-shirt" },
-  { id: "6", name: "Polo Shirt", slug: "polo-shirt" },
-  { id: "7", name: "Pant & Trouser", slug: "pant-trouser" },
-  { id: "8", name: "Attar", slug: "attar" },
-  { id: "9", name: "Gadgets", slug: "gadgets" },
-  { id: "10", name: "Perfumes", slug: "perfumes" },
-  { id: "11", name: "Sneakers", slug: "sneakers" },
-  { id: "12", name: "Natural Foods", slug: "natural-foods" },
-  { id: "13", name: "Tupi", slug: "tupi" },
-  { id: "14", name: "Winter", slug: "winter" },
-  { id: "15", name: "Combo Offers", slug: "combo-offers" },
+  {
+    id: "1",
+    name: "Panjabi",
+    slug: "panjabi",
+    subcategories: [
+      { name: "Eid Collection", slug: "eid-collection" },
+      { name: "Casual Panjabi", slug: "casual-panjabi" },
+      { name: "Semi-Long Panjabi", slug: "semi-long-panjabi" },
+      { name: "White Series", slug: "white-series" },
+    ],
+  },
+  {
+    id: "2",
+    name: "Luxury Panjabi",
+    slug: "luxury-panjabi",
+    subcategories: [
+      { name: "Signature Edition", slug: "signature-edition" },
+      { name: "Exclusive Silk", slug: "exclusive-silk" },
+      { name: "Hand-crafted", slug: "hand-crafted" },
+    ],
+  },
+  {
+    id: "3",
+    name: "Thobe",
+    slug: "thobe",
+    subcategories: [
+      { name: "Embroidered", slug: "embroidered-thobe" },
+      { name: "Classic Arab", slug: "classic-arab-thobe" },
+      { name: "Modern Fit", slug: "modern-fit-thobe" },
+    ],
+  },
+  {
+    id: "4",
+    name: "Shirt",
+    slug: "shirt",
+    subcategories: [
+      { name: "Formal Shirts", slug: "formal-shirts" },
+      { name: "Casual Premium", slug: "casual-premium" },
+      { name: "Linen Series", slug: "linen-series" },
+      { name: "Oxford Shirts", slug: "oxford-shirts" },
+    ],
+  },
+  {
+    id: "5",
+    name: "T-shirt",
+    slug: "t-shirt",
+    subcategories: [
+      { name: "Graphic Tees", slug: "graphic-tees" },
+      { name: "Oversized Fit", slug: "oversized-fit" },
+      { name: "Solid Premium", slug: "solid-premium" },
+      { name: "Minimalist", slug: "minimalist-t-shirts" },
+    ],
+  },
+  {
+    id: "6",
+    name: "Polo Shirt",
+    slug: "polo-shirt",
+    subcategories: [
+      { name: "Classic Polo", slug: "classic-polo" },
+      { name: "Textured Knit", slug: "textured-knit" },
+      { name: "Sport Edition", slug: "sport-edition" },
+    ],
+  },
+  {
+    id: "7",
+    name: "Pant & Trouser",
+    slug: "pant-trouser",
+    subcategories: [
+      { name: "Premium Chinos", slug: "premium-chinos" },
+      { name: "Denim Collection", slug: "denim-collection" },
+      { name: "Cargo Pants", slug: "cargo-pants" },
+      { name: "Comfort Trousers", slug: "comfort-trousers" },
+    ],
+  },
+  {
+    id: "8",
+    name: "Attar",
+    slug: "attar",
+    subcategories: [
+      { name: "Arabian Oud", slug: "arabian-oud" },
+      { name: "Floral Notes", slug: "floral-notes" },
+      { name: "Musk Series", slug: "musk-series" },
+      { name: "Alcohol Free", slug: "alcohol-free" },
+    ],
+  },
+  {
+    id: "9",
+    name: "Gadgets",
+    slug: "gadgets",
+    subcategories: [
+      { name: "Smart Watches", slug: "smart-watches" },
+      { name: "TWS Earbuds", slug: "tws-earbuds" },
+      { name: "Accessories", slug: "tech-accessories" },
+    ],
+  },
+  {
+    id: "10",
+    name: "Perfumes",
+    slug: "perfumes",
+    subcategories: [
+      { name: "French Collection", slug: "french-perfumes" },
+      { name: "Signature Scents", slug: "signature-scents" },
+      { name: "Gift Sets", slug: "perfume-gift-sets" },
+    ],
+  },
+  {
+    id: "11",
+    name: "Sneakers",
+    slug: "sneakers",
+    subcategories: [
+      { name: "Casual Walking", slug: "casual-walking" },
+      { name: "Sport Performance", slug: "sport-performance" },
+      { name: "Lifestyle Lows", slug: "lifestyle-lows" },
+    ],
+  },
+  {
+    id: "12",
+    name: "Natural Foods",
+    slug: "natural-foods",
+    subcategories: [
+      { name: "Organic Honey", slug: "organic-honey" },
+      { name: "Pure Ghee", slug: "pure-ghee" },
+      { name: "Dry Fruits Mix", slug: "dry-fruits-mix" },
+      { name: "Seeds & Nuts", slug: "seeds-nuts" },
+    ],
+  },
+  {
+    id: "13",
+    name: "Tupi",
+    slug: "tupi",
+    subcategories: [
+      { name: "Turkish Caps", slug: "turkish-caps" },
+      { name: "Prayer Caps", slug: "prayer-caps" },
+      { name: "Design Sets", slug: "design-tupi" },
+    ],
+  },
+  {
+    id: "14",
+    name: "Winter",
+    slug: "winter",
+    subcategories: [
+      { name: "Premium Hoodies", slug: "premium-hoodies" },
+      { name: "Sweatshirts", slug: "sweatshirts" },
+      { name: "Jackets", slug: "jackets" },
+    ],
+  },
+  {
+    id: "15",
+    name: "Combo Offers",
+    slug: "combo-offers",
+    subcategories: [
+      { name: "Lifestyle Combo", slug: "lifestyle-combo" },
+      { name: "Eid Combo", slug: "eid-combo" },
+    ],
+  },
 ];
 
 export const heroSlides = [
