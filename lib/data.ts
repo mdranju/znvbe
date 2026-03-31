@@ -161,26 +161,46 @@ export const categories = [
 export const heroSlides = [
   {
     id: 1,
-    image: "https://picsum.photos/seed/hero1/1920/900",
+    image: "/banner/2.jpg",
     alt: "Eid Special Collection 1",
+    slug: "",
   },
-  { id: 2, image: "/banner-ranju.jpg", alt: "Eid Special Collection 2" },
+  {
+    id: 2,
+    image: "/banner/1.jpg",
+    alt: "Eid Special Collection 2",
+    slug: "",
+  },
   {
     id: 3,
-    image: "https://picsum.photos/seed/hero3/1920/900",
+    image: "/banner/3.jpg",
     alt: "Eid Special Collection 3",
+    slug: "",
   },
   {
     id: 4,
-    image: "https://picsum.photos/seed/hero4/1920/900",
+    image: "/banner/4.jpg",
     alt: "New Season 4",
+    slug: "",
   },
   {
     id: 5,
-    image: "https://picsum.photos/seed/hero7/1920/900",
+    image: "/banner/5.jpg",
     alt: "New Season 5",
+    slug: "",
   },
-  { id: 6, image: "/banner.png", alt: "Avlora Wear Banner" },
+  {
+    id: 6,
+    image: "/banner/6.jpg",
+    alt: "Avlora Wear Banner",
+    slug: "",
+  },
+  {
+    id: 7,
+    image: "/banner/7.jpg",
+    alt: "Avlora Wear Banner",
+    slug: "",
+  },
 ];
 
 export const profileActions = [
