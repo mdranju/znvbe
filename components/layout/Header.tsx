@@ -50,8 +50,6 @@ export function Header() {
     }
   }, [totalQuantity]);
 
-
-
   // Combined scroll logic: Desktop glass effect + Mobile smart hide/show
   useEffect(() => {
     const handleScroll = () => {
@@ -91,11 +89,15 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-[999] w-full transition-all duration-500 ease-in-out ${
-          showGlass
-            ? "bg-white/70 backdrop-blur-lg shadow-md border-b border-white/20"
-            : "bg-white border-b border-gray-100"
-        } ${(!isVisible || isSearchModalOpen) ? "-translate-y-full" : "translate-y-0"}`}
+        className={`sticky top-0 z-[999] w-full transition-all duration-500 ease-in-out
+           ${
+             showGlass
+               ? "bg-white border-b border-white/20"
+               : "bg-white border-b border-gray-100"
+           } 
+        
+        ${!isVisible || isSearchModalOpen ? "-translate-y-full" : "translate-y-0"}
+        `}
       >
         {/* 1. Primary Header Row */}
         <div
@@ -188,11 +190,11 @@ export function Header() {
         </div>
 
         {/* 2. Premium Category Navigation (Mega Menu) */}
-        <div className="hidden lg:block border-t border-black/[0.03] relative bg-white/70 backdrop-blur-lg">
+        <div className="hidden lg:block border-t border-black/[0.03] relative bg-white/5 backdrop-blur-2xl">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 relative overflow-visible">
             {/* Scroll Indicator Fades */}
-            <div className="absolute left-10 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
-            <div className="absolute right-10 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            <div className="absolute left-10 top-0 bottom-0 w-20 bg-gradient-to-r  pointer-events-none z-10" />
+            <div className="absolute right-10 top-0 bottom-0 w-20 bg-gradient-to-l  pointer-events-none z-10" />
 
             <div className="overflow-x-auto no-scrollbar scroll-smooth">
               <nav className="flex items-center justify-start lg:justify-center gap-x-12 min-w-max py-4 h-14">
@@ -216,8 +218,6 @@ export function Header() {
             </div>
           </div>
         </div>
-
-
       </header>
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

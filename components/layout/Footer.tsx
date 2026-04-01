@@ -90,7 +90,7 @@ export function Footer() {
             </h3>
             <ul className="space-y-5">
               {[
-                { name: "Profile", href: "/profile" },
+                { name: "Account", href: "/profile" },
                 { name: "Track Order", href: "/track-order" },
                 { name: "Affiliate Program", href: "/affiliate" },
                 { name: "Complain Box", href: "/complain" },

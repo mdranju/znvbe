@@ -48,8 +48,8 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-2 left-4 right-4 z-50">
-      <nav className="flex justify-around items-center h-20 bg-white/80 backdrop-blur-3xl border border-black/5 rounded-[2.5rem] shadow-2xl px-2">
+    <div className="lg:hidden fixed bottom-2 left-4 right-4 z-50 px-4">
+      <nav className="flex justify-around items-center h-16 bg-white/80 backdrop-blur-3xl border border-black/5 rounded-[2.5rem] shadow-2xl px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const activeClass = item.isActive
@@ -61,7 +61,11 @@ export function MobileBottomNav() {
               key={item.name}
               href={item.href}
               onClick={item.onClick}
-              aria-label={item.name === "Cart" ? `Open shopping cart. ${totalQuantity} items.` : `Navigate to ${item.name}`}
+              aria-label={
+                item.name === "Cart"
+                  ? `Open shopping cart. ${totalQuantity} items.`
+                  : `Navigate to ${item.name}`
+              }
               aria-current={item.isActive ? "page" : undefined}
               className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-500 scale-95 hover:scale-100 ${activeClass}`}
             >
