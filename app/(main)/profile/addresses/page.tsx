@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import AddressForm from "./AddressForm";
+import { CustomAlert } from "@/components/ui/CustomAlert";
 
 type AddressFormData = Omit<Address, "id">;
 
@@ -29,6 +30,7 @@ const EMPTY_FORM: AddressFormData = {
   district: "Dhaka",
   postalCode: "",
   phone: "",
+  email: "",
   isDefault: false,
 };
 
@@ -48,8 +50,14 @@ export default function AddressesPage() {
     setEditingId(null);
   };
 
+  const [deleteAlert, setDeleteAlert] = useState<{isOpen: boolean; id: string | null}>({isOpen: false, id: null});
+
+  const confirmDelete = () => {
+    if (deleteAlert.id) deleteAddress(deleteAlert.id);
+  };
+
   const handleDelete = (id: string) => {
-    if (confirm("Delete this address?")) deleteAddress(id);
+    setDeleteAlert({ isOpen: true, id });
   };
 
   return (
@@ -273,6 +281,16 @@ export default function AddressesPage() {
           </div>
         </div>
       </div>
+
+      <CustomAlert
+        isOpen={deleteAlert.isOpen}
+        title="Delete Address"
+        message="Are you sure you want to remove this delivery location from your book?"
+        type="danger"
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteAlert({ isOpen: false, id: null })}
+      />
     </div>
   );
 }

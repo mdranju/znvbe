@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { usePlaceOrderMutation } from "@/src/store/api/orderApi";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import {
   MapPin,
@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { DISTRICTS } from "@/lib/data";
 import { motion, AnimatePresence } from "motion/react";
+import { ProtectedRoute } from "@/components/common/ProtectedRoute";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function CheckoutPage() {
   const { items: cartItems, totalPrice } = useSelector(
@@ -42,17 +44,18 @@ export default function CheckoutPage() {
   );
   const [showSavedAddresses, setShowSavedAddresses] = useState(true);
   const [useNewAddress, setUseNewAddress] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [placeOrder, { isLoading: isPlacingOrder }] = usePlaceOrderMutation();
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   // Redirect if cart becomes empty during interaction
   useEffect(() => {
-    if (cartItems.length === 0 && !isProcessing) {
+    if (cartItems.length === 0 && !isPlacingOrder && !orderSuccess) {
       router.replace("/products");
     }
-  }, [cartItems, isProcessing, router]);
+  }, [cartItems, isPlacingOrder, router, orderSuccess]);
 
   // Controlled form state
   const selectedAddress = selectedAddressId
@@ -68,7 +71,7 @@ export default function CheckoutPage() {
     district: selectedAddress?.district ?? "Dhaka",
     postalCode: selectedAddress?.postalCode ?? "",
     phone: selectedAddress?.phone ?? "",
-    email: "",
+    email: selectedAddress?.email ?? "",
     notes: "",
   });
 
@@ -86,6 +89,7 @@ export default function CheckoutPage() {
       district: address.district,
       postalCode: address.postalCode ?? "",
       phone: address.phone,
+      email: address.email ?? "",
     }));
   };
 
@@ -97,9 +101,9 @@ export default function CheckoutPage() {
     if (!form.city.trim()) errors.city = "City is required";
     if (!form.district.trim()) errors.district = "District is required";
     if (!form.phone.trim()) errors.phone = "Phone number is required";
-    if (!form.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+
+    // Email is now optional, but must be valid if provided
+    if (form.email.trim() && !/\S+@\S+\.\S+/.test(form.email)) {
       errors.email = "Invalid email format";
     }
 
@@ -135,32 +139,47 @@ export default function CheckoutPage() {
       return;
     }
 
-    setIsProcessing(true);
+    try {
+      const orderPayload = {
+        items: cartItems.map((item) => ({
+          product: String(item.id),
+          sku: item.sku,
+          name: item.name,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        totalPrice: totalPrice,
+        shippingCost: shippingCost,
+        shippingAddress: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          street: form.street,
+          city: form.city,
+          district: form.district,
+          phone: form.phone,
+          email: form.email,
+        },
+        paymentMethod: "Cash on delivery",
+        notes: form.notes,
+      };
 
-    const orderId = `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    const orderData = {
-      orderId,
-      items: cartItems,
-      subtotal: totalPrice,
-      shipping: shippingCost,
-      total: totalPrice + shippingCost,
-      paymentMethod: "Cash on delivery",
-      shippingAddress: `${form.street}, ${form.city}, ${form.district}`,
-      date: new Date().toISOString(),
-    };
-
-    // Simulate premium processing delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
-    dispatch(clearCart());
-
-    toast.success("Order Confirmed! 🎉", {
-      description:
-        "Your order has been placed successfully. We'll notify you soon.",
-    });
-
-    router.push("/thank-you");
+      const orderData = await placeOrder(orderPayload).unwrap();
+      setOrderSuccess(true);
+      sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
+      dispatch(clearCart());
+      toast.success("Order Confirmed! 🎉", {
+        description:
+          "Your order has been placed successfully. We'll notify you soon.",
+      });
+      router.push("/thank-you");
+    } catch (err: any) {
+      toast.error("Order Failed", {
+        description:
+          err?.data?.message || "Something went wrong. Please try again later.",
+      });
+    }
   };
 
   const renderError = (field: string) => (
@@ -180,619 +199,631 @@ export default function CheckoutPage() {
   );
 
   // State: Processing Order (Modern Summary UI)
-  if (isProcessing) {
+  if (isPlacingOrder) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
-        {/* Soft Ambient Glows */}
-        <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+      <>
+        <div className="bg-[#F8FAFC] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+          {/* Soft Ambient Glows */}
+          <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
 
-        <div className="w-full max-w-lg relative z-10 space-y-8 animate-in fade-in zoom-in-95 duration-700">
-          <div className="bg-white p-10 lg:p-12 rounded-[2.5rem] border border-black/5 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] backdrop-blur-3xl text-center">
-            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-8 relative">
-              <div className="absolute inset-0 rounded-full border-2 border-blue-600/10 border-t-blue-600 animate-spin" />
-              <CheckCircle2
-                size={40}
-                className="text-blue-600/20"
-                strokeWidth={1.5}
-              />
-            </div>
-
-            <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
-              Secure Checkout
-            </p>
-            <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221] mb-6">
-              Processing Order.
-            </h2>
-            <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed max-w-[280px] mx-auto mb-10">
-              Hang tight! We are finalizing your secure payment and updating
-              your inventory.
-            </p>
-
-            <div className="pt-8 border-t border-black/5 flex flex-col gap-4">
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
-                <span>Order Subtotal</span>
-                <span className="text-[#0B1221]">৳{totalPrice}</span>
+          <div className="w-full max-w-lg relative z-10 space-y-8 animate-in fade-in zoom-in-95 duration-700">
+            <div className="bg-white p-10 lg:p-12 rounded-[2.5rem] border border-black/5 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] backdrop-blur-3xl text-center">
+              <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+                <div className="absolute inset-0 rounded-full border-2 border-blue-600/10 border-t-blue-600 animate-spin" />
+                <CheckCircle2
+                  size={40}
+                  className="text-blue-600/20"
+                  strokeWidth={1.5}
+                />
               </div>
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
-                <span>Shipping Charges</span>
-                <span className="text-[#0B1221]">৳{shippingCost}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm font-black text-[#0B1221] pt-2">
-                <span className="uppercase tracking-[0.2em] text-[10px]">
-                  Total Balance
-                </span>
-                <span className="text-xl">৳{totalPrice + shippingCost}</span>
+
+              <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                Secure Checkout
+              </p>
+              <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221] mb-6">
+                Processing Order.
+              </h2>
+              <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed max-w-[280px] mx-auto mb-10">
+                Hang tight! We are finalizing your secure payment and updating
+                your inventory.
+              </p>
+
+              <div className="pt-8 border-t border-black/5 flex flex-col gap-4">
+                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
+                  <span>Order Subtotal</span>
+                  <span className="text-[#0B1221]">৳{totalPrice}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
+                  <span>Shipping Charges</span>
+                  <span className="text-[#0B1221]">৳{shippingCost}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm font-black text-[#0B1221] pt-2">
+                  <span className="uppercase tracking-[0.2em] text-[10px]">
+                    Total Balance
+                  </span>
+                  <span className="text-xl">৳{totalPrice + shippingCost}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   // State: Empty Checkout (Premium UI)
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-        {/* Soft Ambient Glows */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/4" />
+      <>
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+          {/* Soft Ambient Glows */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/4" />
 
-        <div className="glass-card p-12 lg:p-16 rounded-[3rem] border border-black/5 bg-white shadow-2xl shadow-black/5 max-w-lg relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-10 border border-black/5">
-            <CheckCircle2
-              size={32}
-              className="text-[#0B1221]/10"
-              strokeWidth={1.5}
-            />
+          <div className="glass-card p-12 lg:p-16 rounded-[3rem] border border-black/5 bg-white shadow-2xl shadow-black/5 max-w-lg relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-10 border border-black/5">
+              <CheckCircle2
+                size={32}
+                className="text-[#0B1221]/10"
+                strokeWidth={1.5}
+              />
+            </div>
+
+            <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221] mb-4">
+              Checkout is Empty.
+            </h2>
+            <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed mb-12 max-w-[280px] mx-auto">
+              It looks like you haven&apos;t added any luxury items to your cart
+              yet. Let&apos;s change that.
+            </p>
+
+            <Link
+              href="/products"
+              className="w-full inline-flex items-center justify-center bg-[#0B1221] text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 transition-all shadow-xl active:scale-[0.98]"
+            >
+              Continue Shopping
+            </Link>
           </div>
-
-          <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221] mb-4">
-            Checkout is Empty.
-          </h2>
-          <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed mb-12 max-w-[280px] mx-auto">
-            It looks like you haven&apos;t added any luxury items to your cart
-            yet. Let&apos;s change that.
-          </p>
-
-          <Link
-            href="/products"
-            className="w-full inline-flex items-center justify-center bg-[#0B1221] text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 transition-all shadow-xl active:scale-[0.98]"
-          >
-            Continue Shopping
-          </Link>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 py-12 lg:py-20">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <form
-          onSubmit={handlePlaceOrder}
-          className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
-          noValidate
-        >
-          {/* Section 01: Shipping details */}
-          <div className="w-full lg:w-3/5 space-y-12">
-            <div>
-              <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
-                Section 01
-              </p>
-              <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221]">
-                Shipping Details.
-              </h2>
-            </div>
-
-            {/* ── Saved Address Manager ── */}
-            {addresses.length > 0 && (
-              <div className="glass-card rounded-[2.5rem] border border-black/5 bg-white/40 backdrop-blur-3xl overflow-hidden p-2 shadow-2xl shadow-black/5">
-                <button
-                  type="button"
-                  onClick={() => setShowSavedAddresses((v) => !v)}
-                  className="w-full flex items-center justify-between px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
-                >
-                  <span className="flex items-center gap-3">
-                    <MapPin size={16} strokeWidth={1.5} />
-                    Saved Addresses
-                  </span>
-                  {showSavedAddresses ? (
-                    <ChevronUp size={16} />
-                  ) : (
-                    <ChevronDown size={16} />
-                  )}
-                </button>
-
-                {showSavedAddresses && (
-                  <div className="px-4 pb-6 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
-                    {addresses.map((address) => {
-                      const isSelected =
-                        !useNewAddress &&
-                        (selectedAddressId === address.id ||
-                          (!selectedAddressId && address.isDefault));
-                      return (
-                        <button
-                          key={address.id}
-                          type="button"
-                          onClick={() => applyAddress(address)}
-                          className={`w-full text-left flex items-start gap-4 p-5 rounded-[1.8rem] border-2 transition-all duration-500 ${
-                            isSelected
-                              ? "border-blue-600 bg-white shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
-                              : "border-transparent bg-white/50 hover:bg-white hover:border-black/5"
-                          }`}
-                        >
-                          <div
-                            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-white border border-black/5 text-[#0B1221]/40"}`}
-                          >
-                            {address.label === "Home" ? (
-                              <Home size={18} strokeWidth={1.5} />
-                            ) : address.label === "Office" ? (
-                              <Briefcase size={18} strokeWidth={1.5} />
-                            ) : (
-                              <MapPin size={18} strokeWidth={1.5} />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0 pt-1">
-                            <div className="flex items-center gap-3 mb-1.5">
-                              <span className="text-sm font-black text-[#0B1221] tracking-tight">
-                                {address.label}
-                              </span>
-                              {address.isDefault && (
-                                <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full uppercase tracking-widest border border-blue-100">
-                                  Default
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs font-bold text-[#0B1221]/60 truncate">
-                              {address.street}, {address.city}
-                            </p>
-                          </div>
-                          {isSelected && (
-                            <CheckCircle2
-                              size={24}
-                              className="text-blue-600 shrink-0 mt-2"
-                              strokeWidth={1.5}
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUseNewAddress(true);
-                        setSelectedAddressId(null);
-                        setForm((f) => ({
-                          ...f,
-                          firstName: "",
-                          lastName: "",
-                          street: "",
-                          apartment: "",
-                          city: "",
-                          district: "Dhaka",
-                          postalCode: "",
-                          phone: "",
-                        }));
-                        setValidationErrors({});
-                      }}
-                      className={`w-full flex items-center justify-center gap-3 p-5 rounded-[1.8rem] border-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
-                        useNewAddress
-                          ? "border-blue-600 bg-white text-blue-600 shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
-                          : "border-dashed border-black/10 text-[#0B1221]/20 hover:border-blue-500/30 hover:text-blue-600"
-                      }`}
-                    >
-                      <Plus size={16} strokeWidth={2} />
-                      Add New Address
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ── Billing Form ── */}
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="group space-y-2.5">
-                  <label
-                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.firstName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                  >
-                    First Name *
-                  </label>
-                  <input
-                    value={form.firstName}
-                    onChange={(e) =>
-                      handleInputChange("firstName", e.target.value)
-                    }
-                    placeholder="Enter First Name"
-                    type="text"
-                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.firstName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
-                  />
-                  {renderError("firstName")}
-                </div>
-                <div className="group space-y-2.5">
-                  <label
-                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.lastName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                  >
-                    Last Name *
-                  </label>
-                  <input
-                    value={form.lastName}
-                    onChange={(e) =>
-                      handleInputChange("lastName", e.target.value)
-                    }
-                    placeholder="Enter Last Name"
-                    type="text"
-                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.lastName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
-                  />
-                  {renderError("lastName")}
-                </div>
-              </div>
-
-              <div className="group space-y-2.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
-                  Country / Region *
-                </label>
-                <div className="relative">
-                  <select className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl appearance-none">
-                    <option>Bangladesh</option>
-                  </select>
-                  <ChevronDown
-                    size={18}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0B1221]/20 pointer-events-none"
-                  />
-                </div>
-              </div>
-
-              <div className="group space-y-2.5">
-                <label
-                  className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.street ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                >
-                  Street Address *
-                </label>
-                <div className="space-y-4">
-                  <input
-                    value={form.street}
-                    onChange={(e) =>
-                      handleInputChange("street", e.target.value)
-                    }
-                    type="text"
-                    placeholder="House number and street name"
-                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.street ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
-                  />
-                  <input
-                    value={form.apartment}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, apartment: e.target.value }))
-                    }
-                    type="text"
-                    placeholder="Apartment, suite, unit, etc. (optional)"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
-                  />
-                </div>
-                {renderError("street")}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="group space-y-2.5">
-                  <label
-                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.city ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                  >
-                    Town / City *
-                  </label>
-                  <input
-                    value={form.city}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
-                    placeholder="Enter City"
-                    type="text"
-                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.city ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
-                  />
-                  {renderError("city")}
-                </div>
-                <div className="group space-y-2.5">
-                  <label
-                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                  >
-                    District *
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={form.district}
-                      onChange={(e) =>
-                        handleInputChange("district", e.target.value)
-                      }
-                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] appearance-none ${validationErrors.district ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
-                    >
-                      <option value="" selected disabled>
-                        Select a district...
-                      </option>
-                      {DISTRICTS.map((d) => (
-                        <option key={d.value}>
-                          {d.name} ({d.bn})
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={18}
-                      className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/20"}`}
-                    />
-                  </div>
-                  {renderError("district")}
-                </div>
-              </div>
-
-              <div className="group space-y-2.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
-                  Contact Information *
-                </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-1.5">
-                    <input
-                      value={form.phone}
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                      placeholder="Phone Number"
-                      type="tel"
-                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.phone ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
-                    />
-                    {renderError("phone")}
-                  </div>
-                  <div className="space-y-1.5">
-                    <input
-                      value={form.email}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
-                      placeholder="Email Address"
-                      type="email"
-                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.email ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
-                    />
-                    {renderError("email")}
-                  </div>
-                </div>
-              </div>
-
-              <div className="group space-y-2.5 pt-8">
-                <p className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 mb-4">
-                  Section 02 / Additional Information
-                </p>
-                <div className="space-y-4">
-                  <label className="text-sm font-bold text-[#0B1221] tracking-tight ml-4">
-                    Order Notes
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, notes: e.target.value }))
-                    }
-                    placeholder="Indicate any specific instructions for the delivery team."
-                    className="w-full bg-white border border-black/5 rounded-[2rem] px-8 py-6 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Review Column: Order Summary */}
-          <div className="w-full lg:w-2/5">
-            <div className="glass-card p-10 lg:p-12 rounded-[3.5rem] border border-black/5 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-black/5 lg:sticky lg:top-32">
-              <div className="mb-10 text-center lg:text-left">
+    <>
+      <div className="min-h-screen bg-[#f8fafc]/50 py-12 lg:py-20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <form
+            onSubmit={handlePlaceOrder}
+            className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
+            noValidate
+          >
+            {/* Section 01: Shipping details */}
+            <div className="w-full lg:w-3/5 space-y-12">
+              <div>
                 <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
-                  Section 02
+                  Section 01
                 </p>
-                <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221]">
-                  Order Summary.
+                <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221]">
+                  Shipping Details.
                 </h2>
               </div>
 
-              <div className="space-y-6 mb-12">
-                <div className="flex justify-between items-center px-4 pb-4 border-b border-black/5">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">
-                    Item
-                  </span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">
-                    Price
-                  </span>
-                </div>
+              {/* ── Saved Address Manager ── */}
+              {addresses.length > 0 && (
+                <div className="glass-card rounded-[2.5rem] border border-black/5 bg-white/40 backdrop-blur-3xl overflow-hidden p-2 shadow-2xl shadow-black/5">
+                  <button
+                    type="button"
+                    onClick={() => setShowSavedAddresses((v) => !v)}
+                    className="w-full flex items-center justify-between px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
+                  >
+                    <span className="flex items-center gap-3">
+                      <MapPin size={16} strokeWidth={1.5} />
+                      Saved Addresses
+                    </span>
+                    {showSavedAddresses ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </button>
 
-                <div className="space-y-4 max-h-[350px] overflow-y-auto custom-scrollbar px-2">
-                  {cartItems.map((item, idx) => (
-                    <div
-                      key={`${item.id}-${item.size}-${idx}`}
-                      className="group relative flex justify-between items-center gap-4 sm:gap-6 p-3 sm:p-5 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-black/5"
-                    >
-                      <div className="flex items-center gap-4 sm:gap-5">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl shrink-0 border border-black/5 overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={64}
-                            height={64}
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-black tracking-tight text-[#0B1221] line-clamp-1 mb-1.5 uppercase">
-                            {item.name}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-3">
-                            <div className="flex items-center gap-1.5 bg-gray-50 p-1 rounded-xl border border-black/5">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  dispatch(
-                                    updateQuantity({
-                                      id: item.id,
-                                      size: item.size,
-                                      color: item.color,
-                                      quantity: item.quantity - 1,
-                                    }),
-                                  )
-                                }
-                                disabled={item.quantity <= 1}
-                                className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30 disabled:opacity-30"
-                              >
-                                <Minus size={10} strokeWidth={3} />
-                              </button>
-                              <span className="text-[10px] font-black min-w-4 text-center text-[#0B1221]">
-                                {item.quantity}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  dispatch(
-                                    updateQuantity({
-                                      id: item.id,
-                                      size: item.size,
-                                      color: item.color,
-                                      quantity: item.quantity + 1,
-                                    }),
-                                  )
-                                }
-                                className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30"
-                              >
-                                <Plus size={10} strokeWidth={3} />
-                              </button>
+                  {showSavedAddresses && (
+                    <div className="px-4 pb-6 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                      {addresses.map((address) => {
+                        const isSelected =
+                          !useNewAddress &&
+                          (selectedAddressId === address.id ||
+                            (!selectedAddressId && address.isDefault));
+                        return (
+                          <button
+                            key={address.id}
+                            type="button"
+                            onClick={() => applyAddress(address)}
+                            className={`w-full text-left flex items-start gap-4 p-5 rounded-[1.8rem] border-2 transition-all duration-500 ${
+                              isSelected
+                                ? "border-blue-600 bg-white shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
+                                : "border-transparent bg-white/50 hover:bg-white hover:border-black/5"
+                            }`}
+                          >
+                            <div
+                              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-white border border-black/5 text-[#0B1221]/40"}`}
+                            >
+                              {address.label === "Home" ? (
+                                <Home size={18} strokeWidth={1.5} />
+                              ) : address.label === "Office" ? (
+                                <Briefcase size={18} strokeWidth={1.5} />
+                              ) : (
+                                <MapPin size={18} strokeWidth={1.5} />
+                              )}
                             </div>
-                            <div className="w-1 h-1 rounded-full bg-gray-300" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#0B1221]/20">
-                              {item.size} {item.color ? ` / ${item.color}` : ""}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                            <div className="flex-1 min-w-0 pt-1">
+                              <div className="flex items-center gap-3 mb-1.5">
+                                <span className="text-sm font-black text-[#0B1221] tracking-tight">
+                                  {address.label}
+                                </span>
+                                {address.isDefault && (
+                                  <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full uppercase tracking-widest border border-blue-100">
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs font-bold text-[#0B1221]/60 truncate">
+                                {address.street}, {address.city}
+                              </p>
+                            </div>
+                            {isSelected && (
+                              <CheckCircle2
+                                size={24}
+                                className="text-blue-600 shrink-0 mt-2"
+                                strokeWidth={1.5}
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
 
-                      <div className="flex flex-col items-end gap-2">
-                        <span className="text-sm font-black text-[#0B1221] shrink-0 group-hover:text-blue-600 transition-colors">
-                          ৳{item.price * item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            dispatch(
-                              removeFromCart({
-                                id: item.id,
-                                size: item.size,
-                                color: item.color,
-                              }),
-                            );
-                            toast.info("Item Removed", {
-                              description: `${item.name} removed from your order.`,
-                            });
-                          }}
-                          className="w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg shadow-red-500/10"
-                        >
-                          <Trash2 size={13} strokeWidth={2.5} />
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseNewAddress(true);
+                          setSelectedAddressId(null);
+                          setForm((f) => ({
+                            ...f,
+                            firstName: "",
+                            lastName: "",
+                            street: "",
+                            apartment: "",
+                            city: "",
+                            district: "Dhaka",
+                            postalCode: "",
+                            phone: "",
+                          }));
+                          setValidationErrors({});
+                        }}
+                        className={`w-full flex items-center justify-center gap-3 p-5 rounded-[1.8rem] border-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
+                          useNewAddress
+                            ? "border-blue-600 bg-white text-blue-600 shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
+                            : "border-dashed border-black/10 text-[#0B1221]/20 hover:border-blue-500/30 hover:text-blue-600"
+                        }`}
+                      >
+                        <Plus size={16} strokeWidth={2} />
+                        Add New Address
+                      </button>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-6 pt-8 border-t border-black/5">
-                <div className="flex justify-between items-center px-4 text-sm font-bold text-[#0B1221]">
-                  <span className="opacity-40 uppercase tracking-widest text-[10px] font-black">
-                    Subtotal
-                  </span>
-                  <span>৳{totalPrice}</span>
-                </div>
-
-                <div className="px-4 space-y-4">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 block mb-2">
-                    Shipping Method
-                  </span>
-                  <div className="grid grid-cols-1 gap-4">
+              {/* ── Billing Form ── */}
+              <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="group space-y-2.5">
                     <label
-                      className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 60 ? "border-blue-600 bg-white ring-4 ring-blue-500/5" : "border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0"}`}
+                      className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.firstName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 60 ? "bg-blue-600 text-white" : "bg-white text-gray-400"}`}
-                        >
-                          <CheckCircle2 size={18} strokeWidth={2} />
-                        </div>
-                        <span className="text-xs font-black uppercase tracking-widest">
-                          Inside Dhaka
-                        </span>
-                      </div>
-                      <span className="text-sm font-black">৳60</span>
-                      <input
-                        type="radio"
-                        name="shipping"
-                        className="hidden"
-                        checked={shippingCost === 60}
-                        onChange={() => setShippingCost(60)}
-                      />
+                      First Name *
                     </label>
-
-                    <label
-                      className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 120 ? "border-blue-600 bg-white ring-4 ring-blue-500/5" : "border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0"}`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 120 ? "bg-blue-600 text-white" : "bg-white text-gray-400"}`}
-                        >
-                          <CheckCircle2 size={18} strokeWidth={2} />
-                        </div>
-                        <span className="text-xs font-black uppercase tracking-widest">
-                          Outside Dhaka
-                        </span>
-                      </div>
-                      <span className="text-sm font-black">৳120</span>
-                      <input
-                        type="radio"
-                        name="shipping"
-                        className="hidden"
-                        checked={shippingCost === 120}
-                        onChange={() => setShippingCost(120)}
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-end px-4 py-8 bg-[#0B1221] rounded-[2.5rem] mt-10 shadow-2xl shadow-black/20">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
-                      Total Amount
-                    </span>
-                    <span className="hero-display text-4xl tracking-tighter text-white">
-                      ৳{totalPrice + shippingCost}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <CheckCircle2
-                      size={24}
-                      className="text-blue-500 mb-2"
-                      strokeWidth={1.5}
+                    <input
+                      value={form.firstName}
+                      onChange={(e) =>
+                        handleInputChange("firstName", e.target.value)
+                      }
+                      placeholder="Enter First Name"
+                      type="text"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.firstName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
                     />
-                    <span className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2.5 py-1.5 border border-white/10 rounded-full bg-white/5">
-                      Cash on Delivery
-                    </span>
+                    {renderError("firstName")}
+                  </div>
+                  <div className="group space-y-2.5">
+                    <label
+                      className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.lastName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                    >
+                      Last Name *
+                    </label>
+                    <input
+                      value={form.lastName}
+                      onChange={(e) =>
+                        handleInputChange("lastName", e.target.value)
+                      }
+                      placeholder="Enter Last Name"
+                      type="text"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.lastName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
+                    />
+                    {renderError("lastName")}
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn-glow w-full bg-blue-600 text-white py-6 rounded-[2.2rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20 active:scale-[0.98] mt-8 flex items-center justify-center gap-4"
-                >
-                  Place Order
-                  <div className="w-5 h-px bg-white/30" />
-                </button>
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                    Country / Region *
+                  </label>
+                  <div className="relative">
+                    <select className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl appearance-none">
+                      <option>Bangladesh</option>
+                    </select>
+                    <ChevronDown
+                      size={18}
+                      className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0B1221]/20 pointer-events-none"
+                    />
+                  </div>
+                </div>
 
-                <p className="text-[9px] font-medium text-center text-[#0B1221]/30 uppercase tracking-[0.2em] px-8 leading-relaxed mt-4">
-                  Orders are processed and dispatched from our warehouse. <br />{" "}
-                  Secure checkout active.
-                </p>
+                <div className="group space-y-2.5">
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.street ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
+                    Street Address *
+                  </label>
+                  <div className="space-y-4">
+                    <input
+                      value={form.street}
+                      onChange={(e) =>
+                        handleInputChange("street", e.target.value)
+                      }
+                      type="text"
+                      placeholder="House number and street name"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.street ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                    />
+                    <input
+                      value={form.apartment}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, apartment: e.target.value }))
+                      }
+                      type="text"
+                      placeholder="Apartment, suite, unit, etc. (optional)"
+                      className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                    />
+                  </div>
+                  {renderError("street")}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="group space-y-2.5">
+                    <label
+                      className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.city ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                    >
+                      Town / City *
+                    </label>
+                    <input
+                      value={form.city}
+                      onChange={(e) =>
+                        handleInputChange("city", e.target.value)
+                      }
+                      placeholder="Enter City"
+                      type="text"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.city ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                    />
+                    {renderError("city")}
+                  </div>
+                  <div className="group space-y-2.5">
+                    <label
+                      className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                    >
+                      District *
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={form.district}
+                        onChange={(e) =>
+                          handleInputChange("district", e.target.value)
+                        }
+                        className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] appearance-none ${validationErrors.district ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                      >
+                        <option value="" selected disabled>
+                          Select a district...
+                        </option>
+                        {DISTRICTS.map((d) => (
+                          <option key={d.value}>
+                            {d.name} ({d.bn})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={18}
+                        className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/20"}`}
+                      />
+                    </div>
+                    {renderError("district")}
+                  </div>
+                </div>
+
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                    Contact Information *
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-1.5">
+                      <input
+                        value={form.phone}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
+                        placeholder="Phone Number"
+                        type="tel"
+                        className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.phone ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                      />
+                      {renderError("phone")}
+                    </div>
+                    <div className="space-y-1.5">
+                      <input
+                        value={form.email}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
+                        placeholder="Email Address (Optional)"
+                        type="email"
+                        className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.email ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                      />
+                      <p className="text-[9px] font-bold text-[#0B1221]/30 ml-4">
+                        Provide email to track your order later
+                      </p>
+                      {renderError("email")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group space-y-2.5 pt-8">
+                  <p className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 mb-4">
+                    Section 02 / Additional Information
+                  </p>
+                  <div className="space-y-4">
+                    <label className="text-sm font-bold text-[#0B1221] tracking-tight ml-4">
+                      Order Notes
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={form.notes}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, notes: e.target.value }))
+                      }
+                      placeholder="Indicate any specific instructions for the delivery team."
+                      className="w-full bg-white border border-black/5 rounded-[2rem] px-8 py-6 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+
+            {/* Review Column: Order Summary */}
+            <div className="w-full lg:w-2/5">
+              <div className="glass-card p-10 lg:p-12 rounded-[3.5rem] border border-black/5 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-black/5 lg:sticky lg:top-32">
+                <div className="mb-10 text-center lg:text-left">
+                  <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                    Section 02
+                  </p>
+                  <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221]">
+                    Order Summary.
+                  </h2>
+                </div>
+
+                <div className="space-y-6 mb-12">
+                  <div className="flex justify-between items-center px-4 pb-4 border-b border-black/5">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">
+                      Item
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">
+                      Price
+                    </span>
+                  </div>
+
+                  <div className="space-y-4 max-h-[350px] overflow-y-auto custom-scrollbar px-2">
+                    {cartItems.map((item, idx) => (
+                      <div
+                        key={`${item.id}-${item.size}-${idx}`}
+                        className="group relative flex justify-between items-center gap-4 sm:gap-6 p-3 sm:p-5 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-black/5"
+                      >
+                        <div className="flex items-center gap-4 sm:gap-5">
+                          <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl shrink-0 border border-black/5 overflow-hidden">
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              width={64}
+                              height={64}
+                              className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm font-black tracking-tight text-[#0B1221] line-clamp-1 mb-1.5 uppercase">
+                              {item.name}
+                            </p>
+                            <div className="flex flex-wrap items-center gap-3">
+                              <div className="flex items-center gap-1.5 bg-gray-50 p-1 rounded-xl border border-black/5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    dispatch(
+                                      updateQuantity({
+                                        id: item.id,
+                                        size: item.size,
+                                        color: item.color,
+                                        quantity: item.quantity - 1,
+                                      }),
+                                    )
+                                  }
+                                  disabled={item.quantity <= 1}
+                                  className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30 disabled:opacity-30"
+                                >
+                                  <Minus size={10} strokeWidth={3} />
+                                </button>
+                                <span className="text-[10px] font-black min-w-4 text-center text-[#0B1221]">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    dispatch(
+                                      updateQuantity({
+                                        id: item.id,
+                                        size: item.size,
+                                        color: item.color,
+                                        quantity: item.quantity + 1,
+                                      }),
+                                    )
+                                  }
+                                  className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30"
+                                >
+                                  <Plus size={10} strokeWidth={3} />
+                                </button>
+                              </div>
+                              <div className="w-1 h-1 rounded-full bg-gray-300" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-[#0B1221]/20">
+                                {item.size}{" "}
+                                {item.color ? ` / ${item.color}` : ""}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="text-sm font-black text-[#0B1221] shrink-0 group-hover:text-blue-600 transition-colors">
+                            ৳{item.price * item.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              dispatch(
+                                removeFromCart({
+                                  id: item.id,
+                                  size: item.size,
+                                  color: item.color,
+                                }),
+                              );
+                              toast.info("Item Removed", {
+                                description: `${item.name} removed from your order.`,
+                              });
+                            }}
+                            className="w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg shadow-red-500/10"
+                          >
+                            <Trash2 size={13} strokeWidth={2.5} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-6 pt-8 border-t border-black/5">
+                  <div className="flex justify-between items-center px-4 text-sm font-bold text-[#0B1221]">
+                    <span className="opacity-40 uppercase tracking-widest text-[10px] font-black">
+                      Subtotal
+                    </span>
+                    <span>৳{totalPrice}</span>
+                  </div>
+
+                  <div className="px-4 space-y-4">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 block mb-2">
+                      Shipping Method
+                    </span>
+                    <div className="grid grid-cols-1 gap-4">
+                      <label
+                        className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 60 ? "border-blue-600 bg-white ring-4 ring-blue-500/5" : "border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0"}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 60 ? "bg-blue-600 text-white" : "bg-white text-gray-400"}`}
+                          >
+                            <CheckCircle2 size={18} strokeWidth={2} />
+                          </div>
+                          <span className="text-xs font-black uppercase tracking-widest">
+                            Inside Dhaka
+                          </span>
+                        </div>
+                        <span className="text-sm font-black">৳60</span>
+                        <input
+                          type="radio"
+                          name="shipping"
+                          className="hidden"
+                          checked={shippingCost === 60}
+                          onChange={() => setShippingCost(60)}
+                        />
+                      </label>
+
+                      <label
+                        className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 120 ? "border-blue-600 bg-white ring-4 ring-blue-500/5" : "border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0"}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 120 ? "bg-blue-600 text-white" : "bg-white text-gray-400"}`}
+                          >
+                            <CheckCircle2 size={18} strokeWidth={2} />
+                          </div>
+                          <span className="text-xs font-black uppercase tracking-widest">
+                            Outside Dhaka
+                          </span>
+                        </div>
+                        <span className="text-sm font-black">৳120</span>
+                        <input
+                          type="radio"
+                          name="shipping"
+                          className="hidden"
+                          checked={shippingCost === 120}
+                          onChange={() => setShippingCost(120)}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-end px-4 py-8 bg-[#0B1221] rounded-[2.5rem] mt-10 shadow-2xl shadow-black/20">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
+                        Total Amount
+                      </span>
+                      <span className="hero-display text-4xl tracking-tighter text-white">
+                        ৳{totalPrice + shippingCost}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <CheckCircle2
+                        size={24}
+                        className="text-blue-500 mb-2"
+                        strokeWidth={1.5}
+                      />
+                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2.5 py-1.5 border border-white/10 rounded-full bg-white/5">
+                        Cash on Delivery
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn-glow w-full bg-blue-600 text-white py-6 rounded-[2.2rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20 active:scale-[0.98] mt-8 flex items-center justify-center gap-4"
+                  >
+                    Place Order
+                    <div className="w-5 h-px bg-white/30" />
+                  </button>
+
+                  <p className="text-[9px] font-medium text-center text-[#0B1221]/30 uppercase tracking-[0.2em] px-8 leading-relaxed mt-4">
+                    Orders are processed and dispatched from our warehouse.{" "}
+                    <br /> Secure checkout active.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

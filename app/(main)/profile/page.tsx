@@ -5,6 +5,12 @@ import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { profileActions } from "@/lib/data";
 import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "@/src/store/api/userApi";
+import { logout } from "@/src/store/slices/authSlice";
+import { AppDispatch } from "@/src/store/store";
+import {
   AlertCircle,
   ChevronRight,
   Edit3,
@@ -16,22 +22,51 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export default function ProfilePage() {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    data: profile,
+    isLoading: isFetching,
+    isError: fetchError,
+  } = useGetProfileQuery();
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
   const [showForm, setShowForm] = useState(false);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
 
-  const user = {
-    name: "Md. Ranju",
-    email: "mdranju.dev@gmail.com",
-    phone: "01799301290",
-    address: "Mohakhali, Dhaka - 1212",
-  };
+  const router = useRouter();
 
-  const [form, setForm] = useState({ ...user });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  useEffect(() => {
+    if (fetchError) {
+      toast.error("Fetch Error", {
+        description: "Failed to load profile data. Please try again later.",
+      });
+    }
+  }, [fetchError]);
+
+  useEffect(() => {
+    if (profile) {
+      setForm({
+        name: profile.name || "",
+        email: profile.email || "",
+        phone: profile.contact || profile.phone || "",
+        address: profile.address || "",
+      });
+    }
+  }, [profile]);
 
   const handleInputChange = (field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -47,24 +82,29 @@ export default function ProfilePage() {
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!form.name.trim()) errors.name = "Full name is required";
-    if (!form.phone.trim()) errors.phone = "Phone number is required";
-    if (!form.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      errors.email = "Invalid email format";
-    }
     if (!form.address.trim()) errors.address = "Address is required";
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validateForm()) {
-      toast.success("Profile Updated", {
-        description: "Your account information has been saved successfully.",
-      });
-      setShowForm(false);
+      try {
+        const result = await updateProfile({
+          name: form.name,
+          address: form.address,
+        }).unwrap();
+
+        toast.success("Profile Updated", {
+          description: "Your account information has been saved successfully.",
+        });
+        setShowForm(false);
+      } catch (error: any) {
+        toast.error("Update Failed", {
+          description: error?.data?.message || "Failed to update profile",
+        });
+      }
     } else {
       toast.warning("Validation Failed", {
         description: "Please correct the errors in the form before saving.",
@@ -89,7 +129,18 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32">
+    <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32 relative">
+      {isFetching && !profile && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#0B1221]">
+              Loading Profile...
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* 1. Profile Hero */}
       <div className="relative h-[20vh] lg:h-[30vh]  flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-900/40 opacity-50" />
@@ -180,7 +231,13 @@ export default function ProfilePage() {
                       </Link>
                     );
                   })}
-                  <button className="group relative glass-card p-8 rounded-[2.5rem] border border-red-500/10 bg-red-50/10 transition-all duration-500 hover:bg-red-50 hover:shadow-2xl shadow-md/5 hover:shadow-red-500/5 hover:-translate-y-2 text-left cursor-pointer">
+                  <button
+                    onClick={() => {
+                      dispatch(logout());
+                      router.push("/");
+                    }}
+                    className="group relative glass-card p-8 rounded-[2.5rem] border border-red-500/10 bg-red-50/10 transition-all duration-500 hover:bg-red-50 hover:shadow-2xl shadow-md/5 hover:shadow-red-500/5 hover:-translate-y-2 text-left cursor-pointer"
+                  >
                     <div className="w-14 h-14 rounded-2xl bg-white text-red-500 flex items-center justify-center shadow-sm mb-6 group-hover:scale-110">
                       <LogOut size={24} />
                     </div>
@@ -251,55 +308,53 @@ export default function ProfilePage() {
                       {renderError("name")}
                     </div>
 
-                    <div className="group space-y-3">
-                      <label
-                        className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                      >
-                        Phone Number *
-                      </label>
+                    <div className="group space-y-3 opacity-60">
+                      <div className="flex items-center justify-between ml-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1221]/40">
+                          Phone Number
+                        </label>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-orange-500/60 bg-orange-50 px-2 py-0.5 rounded-full">
+                          Fixed
+                        </span>
+                      </div>
                       <div className="relative">
                         <Phone
                           size={18}
-                          className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`}
+                          className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10"
                           strokeWidth={1.5}
                         />
                         <input
                           type="tel"
                           value={form.phone}
-                          onChange={(e) =>
-                            handleInputChange("phone", e.target.value)
-                          }
-                          placeholder="Your phone number"
-                          className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.phone ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
+                          readOnly
+                          className="w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none bg-gray-50/30 border-black/5 text-[#0B1221]/40 text-sm font-bold cursor-not-allowed"
                         />
                       </div>
-                      {renderError("phone")}
                     </div>
                   </div>
 
-                  <div className="group space-y-3">
-                    <label
-                      className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
-                    >
-                      Email Address *
-                    </label>
+                  <div className="group space-y-3 opacity-60">
+                    <div className="flex items-center justify-between ml-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1221]/40">
+                        Email Address
+                      </label>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-orange-500/60 bg-orange-50 px-2 py-0.5 rounded-full">
+                        Fixed
+                      </span>
+                    </div>
                     <div className="relative">
                       <Mail
                         size={18}
-                        className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`}
+                        className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10"
                         strokeWidth={1.5}
                       />
                       <input
                         type="email"
                         value={form.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                        placeholder="Your email address"
-                        className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.email ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
+                        readOnly
+                        className="w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none bg-gray-50/30 border-black/5 text-[#0B1221]/40 text-sm font-bold cursor-not-allowed"
                       />
                     </div>
-                    {renderError("email")}
                   </div>
 
                   <div className="group space-y-3">
@@ -331,9 +386,13 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={handleSave}
-                      className="btn-glow px-12 py-5 bg-blue-600 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20"
+                      disabled={isUpdating}
+                      className="btn-glow px-12 py-5 bg-blue-600 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
                     >
-                      Save Changes
+                      {isUpdating && (
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      )}
+                      {isUpdating ? "Saving..." : "Save Changes"}
                     </button>
                     <button
                       type="button"

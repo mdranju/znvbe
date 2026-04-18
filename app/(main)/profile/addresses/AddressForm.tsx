@@ -50,6 +50,10 @@ function AddressForm({
     if (!form.district.trim()) errors.district = "District is required";
     if (!form.phone.trim()) errors.phone = "Phone number is required";
 
+    if (form.email?.trim() && !/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       return;
@@ -242,6 +246,25 @@ function AddressForm({
           />
           {renderError("phone")}
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label
+          className={`block text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-gray-400"}`}
+        >
+          Email Address{" "}
+          <span className="lowercase font-bold opacity-30 italic">
+            (optional)
+          </span>
+        </label>
+        <input
+          value={form.email}
+          onChange={(e) => set("email", e.target.value)}
+          placeholder="Email address for order updates"
+          type="email"
+          className={`w-full px-6 py-4 rounded-[1.25rem] text-sm font-bold outline-none border transition-all duration-300 ${validationErrors.email ? "bg-red-50/20 border-red-500 text-red-600 focus:bg-white" : "bg-gray-50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
+        />
+        {renderError("email")}
       </div>
 
       {/* Default toggle */}

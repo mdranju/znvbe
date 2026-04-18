@@ -19,6 +19,7 @@ import {
   Settings as SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { SITE_CONFIG } from "@/src/config/site";
 
 export default function SettingsPage() {
   const sections = [
@@ -178,7 +179,7 @@ export default function SettingsPage() {
                       Call Us
                     </a>
                     <a
-                      href="mailto:contact@avlorawear.com"
+                      href={`mailto:${SITE_CONFIG.email}`}
                       className="px-10 py-5 bg-white/10 border border-white/10 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white/20 transition-all text-center backdrop-blur-3xl"
                     >
                       Email Us

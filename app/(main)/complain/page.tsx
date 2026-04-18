@@ -4,6 +4,7 @@ import { BackButton } from "@/components/common/BackButton";
 import { useState } from "react";
 import { MessageSquare, CheckCircle, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { complaintApi } from "@/src/services/api";
 
 export default function ComplainPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -44,10 +45,27 @@ export default function ComplainPage() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setSubmitted(true);
+      setLoading(true);
+      try {
+        const payload = {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            orderNumber: form.orderId,
+            issueType: form.type,
+            message: form.message
+        };
+        await complaintApi.submit(payload);
+        setSubmitted(true);
+      } catch (error) {
+        console.error("Complaint error:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -234,9 +252,10 @@ export default function ComplainPage() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full md:w-auto md:px-14 bg-amber-500 text-white py-4 sm:py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-600 transition-colors hover:shadow-xl hover:shadow-amber-500/20 mx-auto block max-w-sm"
+                  disabled={loading}
+                  className="w-full md:w-auto md:px-14 bg-amber-500 text-white py-4 sm:py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-600 transition-colors hover:shadow-xl hover:shadow-amber-500/20 mx-auto block max-w-sm disabled:opacity-50"
                 >
-                  Submit Complaint
+                  {loading ? "Submitting..." : "Submit Complaint"}
                 </button>
               </div>
             </form>

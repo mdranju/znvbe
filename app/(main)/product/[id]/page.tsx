@@ -1,32 +1,51 @@
 import { Metadata } from "next";
-import { products } from "@/lib/data";
+import { SITE_CONFIG } from "@/src/config/site";
+import { productApi, extractData } from "@/src/services/api";
 import ProductDetailClient from "./ProductDetailClient";
+import { notFound } from "next/navigation";
+import { resolveImageUrl } from "@/src/utils/image";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
+async function getProductData(id: string) {
+  try {
+    const response = await productApi.getById(id);
+    return extractData<any>(response);
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getRelatedProducts(id: string, categoryId: string) {
+  try {
+    const response = await productApi.getRelated(id, categoryId);
+    return extractData<any[]>(response);
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const product =
-    products.find((p) => p.slug === resolvedParams.id) || products[0];
+  const product = await getProductData(resolvedParams.id);
   
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://avlorawear.com";
+  if (!product) return { title: `Product Not Found | ${SITE_CONFIG.name}` };
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || SITE_CONFIG.baseUrl;
   const productUrl = `${siteUrl}/product/${product.slug}`;
   
-  // Ensure we have a high-quality absolute image URL
-  const imageUrl = product.image.startsWith('http') 
-    ? product.image 
-    : `${siteUrl}${product.image}`;
+  const imageUrl = resolveImageUrl(product.images?.[0]);
 
   return {
-    title: `${product.name} | Avlora Wear`,
+    title: `${product.name} | ${SITE_CONFIG.name}`,
     description: product.description,
     openGraph: {
       title: product.name,
       description: product.description,
       url: productUrl,
-      siteName: "Avlora Wear",
+      siteName: SITE_CONFIG.name,
       images: [
         {
           url: imageUrl,
@@ -48,8 +67,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const resolvedParams = await params;
-  const product =
-    products.find((p) => p.slug === resolvedParams.id) || products[0];
+  const product = await getProductData(resolvedParams.id);
 
-  return <ProductDetailClient product={product} products={products} />;
+  if (!product) {
+    notFound();
+  }
+
+  const relatedProducts = await getRelatedProducts(
+    product._id || product.id, 
+    product.category?._id || product.category
+  );
+
+  return <ProductDetailClient product={product} products={relatedProducts} />;
 }

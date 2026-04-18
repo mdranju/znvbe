@@ -3,51 +3,57 @@
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { OrderDetailModal } from "@/components/profile/OrderDetailModal";
 import { BackButton } from "@/components/common/BackButton";
-import { mockOrders } from "@/lib/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Package, Calendar, Tag, CreditCard } from "lucide-react";
 import Image from "next/image";
-
-interface IOrder {
-  id: string;
-  date: string;
-  status: string;
-  total: number;
-  paymentMethod: string;
-  shippingAddress: string;
-  items: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    size: string;
-    image: string;
-  }>;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { useGetMyOrdersQuery } from "@/src/store/api/orderApi";
+import { resolveImageUrl } from "@/src/utils/image";
 
 export default function MyOrdersPage() {
-  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const { data: rawOrders = [], isLoading } = useGetMyOrdersQuery({});
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOrderClick = (order: IOrder) => {
+  // Normalize orders for the UI
+  const orders = rawOrders.map((order: any) => ({
+    ...order,
+    id: order.orderId || order._id,
+    date: order.createdAt,
+    total: order.totalPrice,
+    shippingAddress:
+      typeof order.shippingAddress === "object"
+        ? `${order.shippingAddress.street}, ${order.shippingAddress.city}`
+        : order.shippingAddress,
+  }));
+
+  const handleOrderClick = (order: any) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
+    switch (status?.toLowerCase()) {
+      case "delivered":
         return "bg-green-100 text-green-800";
-      case "Shipped":
+      case "shipped":
         return "bg-blue-100 text-blue-800";
-      case "Processing":
+      case "processing":
         return "bg-orange-100 text-orange-800";
-      case "Pending":
+      case "pending":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  if (isLoading && orders.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32 lg:pt-10">
@@ -83,17 +89,17 @@ export default function MyOrdersPage() {
               <div className="flex items-center gap-4">
                 <div className="w-8 h-px bg-blue-600" />
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">
-                  Total Orders: {mockOrders.length}
+                  Total Orders: {orders.length}
                 </p>
               </div>
             </div>
 
             {/* Redesigned Order Cards (Mobile/Tablet) */}
             <div className="lg:hidden space-y-6">
-              {mockOrders.map((order, idx) => (
+              {orders.map((order: any, idx: number) => (
                 <div
                   key={order.id}
-                  onClick={() => handleOrderClick(order as any)}
+                  onClick={() => handleOrderClick(order)}
                   className="group relative glass-card p-6 bg-white border border-black/5 rounded-[2.5rem] overflow-hidden transition-all duration-700 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
@@ -107,13 +113,7 @@ export default function MyOrdersPage() {
                       </h3>
                     </div>
                     <span
-                      className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                        order.status === "Delivered"
-                          ? "bg-green-500/5 text-green-600 border-green-500/10"
-                          : order.status === "Shipped"
-                            ? "bg-blue-500/5 text-blue-600 border-blue-500/10"
-                            : "bg-orange-500/5 text-orange-600 border-orange-500/10"
-                      }`}
+                      className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}
                     >
                       {order.status}
                     </span>
@@ -143,20 +143,24 @@ export default function MyOrdersPage() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex -space-x-3">
-                      {order.items.slice(0, 3).map((item, i) => (
+                      {order.items?.slice(0, 3).map((item: any, i: number) => (
                         <div
                           key={i}
                           className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-gray-50 relative group-hover:scale-110 transition-transform duration-500"
                         >
                           <Image
-                            src={item.image}
+                            src={resolveImageUrl(
+                              item.image ||
+                                item.product?.image ||
+                                "/placeholder.jpg"
+                            )}
                             alt=""
                             fill
                             className="object-cover"
                           />
                         </div>
                       ))}
-                      {order.items.length > 3 && (
+                      {order.items?.length > 3 && (
                         <div className="w-10 h-10 rounded-full border-2 border-white bg-[#0B1221] flex items-center justify-center text-[10px] font-black text-white">
                           +{order.items.length - 3}
                         </div>
@@ -199,10 +203,10 @@ export default function MyOrdersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/5">
-                  {mockOrders.map((order, idx) => (
+                  {orders.map((order: any, idx: number) => (
                     <tr
                       key={order.id}
-                      onClick={() => handleOrderClick(order as any)}
+                      onClick={() => handleOrderClick(order)}
                       className="group hover:bg-blue-600/5 cursor-pointer transition-all duration-500"
                     >
                       <td className="px-10 py-8">
@@ -234,13 +238,7 @@ export default function MyOrdersPage() {
                       </td>
                       <td className="px-10 py-8 text-right">
                         <span
-                          className={`inline-flex items-center px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-500 group-hover:px-7 ${
-                            order.status === "Delivered"
-                              ? "bg-green-500/5 text-green-600 border-green-500/10"
-                              : order.status === "Shipped"
-                                ? "bg-blue-500/5 text-blue-600 border-blue-500/10"
-                                : "bg-orange-500/5 text-orange-600 border-orange-500/10"
-                          }`}
+                          className={`inline-flex items-center px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-500 group-hover:px-7 ${getStatusColor(order.status)}`}
                         >
                           {order.status}
                         </span>
@@ -252,7 +250,7 @@ export default function MyOrdersPage() {
             </div>
 
             {/* Empty State */}
-            {mockOrders.length === 0 && (
+            {!isLoading && orders.length === 0 && (
               <div className="text-center py-40 glass-card rounded-[3.5rem] bg-white border border-black/5">
                 <Package
                   size={64}

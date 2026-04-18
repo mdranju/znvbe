@@ -12,6 +12,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { affiliateApi } from "@/src/services/api";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 
 interface FormState {
   name: string;
@@ -56,6 +58,7 @@ const FAQS = [
 
 export default function AffiliatePage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -93,10 +96,21 @@ export default function AffiliatePage() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setSubmitted(true);
+      setLoading(true);
+      try {
+        await affiliateApi.apply(form);
+        setSubmitted(true);
+        toast.success("Application Sent", {
+          description: "We'll review your profile soon.",
+        });
+      } catch (error) {
+        toast.error("Error", { description: "Failed to submit application." });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -273,9 +287,10 @@ export default function AffiliatePage() {
                 <div className="pt-6">
                   <button
                     type="submit"
-                    className="w-full md:w-auto md:px-14 bg-indigo-600 text-white py-4 sm:py-5 rounded-[1.25rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-1 transition-all mx-auto block max-w-sm"
+                    disabled={loading}
+                    className="w-full md:w-auto md:px-14 bg-indigo-600 text-white py-4 sm:py-5 rounded-[1.25rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-1 transition-all mx-auto block max-w-sm disabled:opacity-50"
                   >
-                    Submit Application
+                    {loading ? "Submitting..." : "Submit Application"}
                   </button>
                 </div>
               </form>
@@ -283,7 +298,7 @@ export default function AffiliatePage() {
           )}
         </div>
 
-        {/* FAQs inside bottom of affiliate page */}
+        {/* FAQs */}
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 border border-black/5">
           <h2 className="text-xl sm:text-2xl font-black text-[#0B1221] uppercase tracking-tighter mb-8 flex items-center gap-4">
             <span className="w-6 h-1 bg-indigo-500 rounded-full" />

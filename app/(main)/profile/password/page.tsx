@@ -5,6 +5,7 @@ import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { BackButton } from "@/components/common/BackButton";
 import { Lock as LockIcon, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { useChangePasswordMutation } from "@/src/store/api/authApi";
 import { motion, AnimatePresence } from "motion/react";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 
@@ -19,7 +20,8 @@ export default function ChangePasswordPage() {
     newPassword?: string;
     confirmPassword?: string;
   }>({});
-  const [isLoading, setIsLoading] = useState(false);
+  
+  const [changePassword, { isLoading }] = useChangePasswordMutation();
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -52,10 +54,8 @@ export default function ChangePasswordPage() {
       return;
     }
 
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await changePassword({ oldPassword: currentPassword, newPassword }).unwrap();
       toast.success("Password Updated", {
         description: "Your password has been changed successfully.",
       });
@@ -64,7 +64,11 @@ export default function ChangePasswordPage() {
         newPassword: "",
         confirmPassword: "",
       });
-    }, 1500);
+    } catch (err: any) {
+      toast.error("Update Failed", {
+        description: err?.data?.message || "Failed to change password. Please check your current password.",
+      });
+    }
   };
 
   const renderError = (error?: string) => (

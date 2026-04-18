@@ -3,24 +3,24 @@ import { MapPin, Phone, Clock, Navigation } from "lucide-react";
 
 const STORES = [
   {
-    name: "Avlora Wear - Mirpur 10",
-    address: "House 12, Road 5, Mirpur 10 Circle, Dhaka - 1216",
-    phone: "01799-301290",
-    hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",
+    name: "Seivibe - London Soho",
+    address: "24 Carnaby St, Soho, London W1F 7DB, UK",
+    phone: "+44 20 7123 4567",
+    hours: "Mon–Sat: 10AM–8PM, Sun: 12PM–6PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Avlora Wear - Mohakhali",
-    address: "Level 3, Block A, Mohakhali DOHS, Dhaka - 1212",
-    phone: "09638-090000",
-    hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",
+    name: "Seivibe - New York Manhattan",
+    address: "452 Broadway, New York, NY 10013, USA",
+    phone: "+1 212-555-0198",
+    hours: "Mon–Sat: 10AM–9PM, Sun: 11AM–7PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Avlora Wear - Chittagong",
-    address: "GEC Circle, Khulshi, Chittagong - 4225",
-    phone: "09638-090000",
-    hours: "Sat–Thu: 10AM–9PM, Fri: 2PM–9PM",
+    name: "Seivibe - Dubai Mall",
+    address: "Level 1, The Dubai Mall, Downtown Dubai, UAE",
+    phone: "+971 4 362 7500",
+    hours: "Daily: 10AM–12AM",
     maps: "https://maps.google.com",
   },
 ];

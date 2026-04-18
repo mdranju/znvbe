@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
+import { resolveImageUrl } from "@/src/utils/image";
 import {
   ArrowRight,
   CheckCircle,
@@ -15,11 +16,10 @@ import { useEffect, useState } from "react";
 interface OrderData {
   orderId: string;
   items: any[];
-  subtotal: number;
-  shipping: number;
-  total: number;
+  totalPrice: number;
+  shippingCost: number;
   paymentMethod: string;
-  date: string;
+  createdAt: string;
 }
 
 export default function ThankYouPage() {
@@ -85,7 +85,7 @@ export default function ThankYouPage() {
           <div className="flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
             <div className="h-6 w-px bg-white/20" />
             <span className="text-[10px] font-black text-white/40 uppercase tracking-widest italic leading-none">
-              Your order is placed / ID: {order.orderId}
+              Your order is placed / ID: {order.orderId || (order as any)._id}
             </span>
             <div className="h-6 w-px bg-white/20" />
           </div>
@@ -127,15 +127,15 @@ export default function ThankYouPage() {
               </div>
               <div className="text-right flex flex-col">
                 <div>
-                  <p className="text-[#0B1221]/40 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
+                  <span className="text-[#0B1221]/40 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
                     Order Date
-                  </p>
+                  </span>
                   <span className="text-sm font-black text-[#0B1221]">
-                    {new Date(order.date).toLocaleDateString()}
+                    {new Date(order.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <span className="text-sm font-black text-[#0B1221]">
-                  ID: {order.orderId}
+                  ID: {order.orderId || (order as any)._id || "N/A"}
                 </span>
               </div>
             </div>
@@ -146,7 +146,9 @@ export default function ThankYouPage() {
                   <div key={idx} className="flex gap-8 items-center group">
                     <div className="relative w-24 h-24 bg-gray-50 rounded-[2rem] overflow-hidden border border-black/5 shrink-0 transition-transform duration-700 group-hover:scale-105 group-hover:shadow-xl">
                       <Image
-                        src={item.image}
+                        src={resolveImageUrl(
+                          item.product?.images?.[0] || "/placeholder.jpg",
+                        )}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -160,6 +162,10 @@ export default function ThankYouPage() {
                         {item.name}
                       </h4>
                       <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black text-[#0B1221]/20 uppercase tracking-widest">
+                          SKU: {item.sku || "N/A"}
+                        </span>
+                        <div className="w-1 h-1 bg-black/5 rounded-full" />
                         <span className="text-[10px] font-black text-[#0B1221]/20 uppercase tracking-widest">
                           Size: {item.size}
                         </span>
@@ -187,7 +193,7 @@ export default function ThankYouPage() {
                     Subtotal
                   </span>
                   <span className="text-sm font-bold text-[#0B1221]">
-                    ৳{order.subtotal}
+                    ৳{order.totalPrice - order.shippingCost}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -200,7 +206,7 @@ export default function ThankYouPage() {
                     </p>
                   </div>
                   <span className="text-sm font-bold text-[#0B1221]">
-                    ৳{order.shipping}
+                    ৳{order.shippingCost}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-6 border-y border-black/5">
@@ -219,7 +225,7 @@ export default function ThankYouPage() {
                     Order Total.
                   </span>
                   <span className="text-3xl font-black text-blue-600 tracking-tighter">
-                    ৳{order.total}
+                    ৳{order.totalPrice}
                   </span>
                 </div>
               </div>

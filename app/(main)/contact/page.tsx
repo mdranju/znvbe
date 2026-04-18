@@ -3,6 +3,9 @@
 import { BackButton } from "@/components/common/BackButton";
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, CheckCircle } from "lucide-react";
+import { contactApi } from "@/src/services/api";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
+import { SITE_CONFIG } from "@/src/config/site";
 
 const CONTACT_INFO = [
   {
@@ -14,8 +17,8 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     label: "Email Us",
-    value: "contact@avlorawear.com",
-    href: "mailto:contact@avlorawear.com",
+    value: SITE_CONFIG.email,
+    href: `mailto:${SITE_CONFIG.email}`,
   },
   {
     icon: MapPin,
@@ -33,6 +36,7 @@ const CONTACT_INFO = [
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -40,6 +44,22 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await contactApi.submit(form);
+      setSubmitted(true);
+      toast.success("Message Sent", {
+        description: "We'll get back to you soon.",
+      });
+    } catch (error) {
+      toast.error("Error", { description: "Failed to send message." });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -116,10 +136,7 @@ export default function ContactPage() {
                 </h2>
               </div>
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSubmitted(true);
-                }}
+                onSubmit={handleSubmit}
                 className="space-y-6 max-w-3xl mx-auto"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -201,9 +218,10 @@ export default function ContactPage() {
                 <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full md:w-auto md:px-14 bg-[#0B1221] text-white py-4 sm:py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-cyan-600 transition-colors hover:shadow-xl hover:shadow-cyan-600/20 mx-auto block"
+                    disabled={loading}
+                    className="w-full md:w-auto md:px-14 bg-[#0B1221] text-white py-4 sm:py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-cyan-600 transition-colors hover:shadow-xl hover:shadow-cyan-600/20 mx-auto block disabled:opacity-50"
                   >
-                    Send Message
+                    {loading ? "Sending..." : "Send Message"}
                   </button>
                 </div>
               </form>
