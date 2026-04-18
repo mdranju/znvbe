@@ -1,6 +1,7 @@
 "use client";
+import { resolveImageUrl } from "@/src/utils/image";
 
-import { Search, User, ShoppingBag } from "lucide-react";
+import { Search, User, ShoppingBag, Heart } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,7 +11,15 @@ import dynamic from "next/dynamic";
 import { SearchBar } from "./SearchBar";
 import Image from "next/image";
 import { categories } from "@/lib/data";
-import { AnimatePresence } from "motion/react";
+import { useCMS } from "@/src/hooks/useCMS";
+import { useScroll } from "@/src/hooks/useScroll";
+import { motion, AnimatePresence } from "motion/react";
+import { SITE_CONFIG } from "@/src/config/site";
+import { useGetWishlistQuery } from "@/src/store/api/wishlistApi";
+import {
+  useGetCategoriesQuery,
+  useGetSubcategoriesQuery,
+} from "@/src/store/api/categoryApi";
 
 const MobileMenu = dynamic(
   () => import("./MobileMenu").then((mod) => mod.MobileMenu),
@@ -26,13 +35,18 @@ const SearchModal = dynamic(
 );
 
 export function Header() {
+  const { metadata, getImageUrl } = useCMS();
+  const { data: dynamicCategories = [] } = useGetCategoriesQuery({
+    status: "active",
+  });
+  const { data: allSubcategories = [] } = useGetSubcategoriesQuery({
+    status: "active",
+  });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
+  const { isAtTop, scrolled, isVisible } = useScroll(0);
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -40,51 +54,26 @@ export function Header() {
     (state: RootState) => state.cart.totalQuantity,
   );
   const isCartOpen = useSelector((state: RootState) => state.ui.isCartOpen);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { data: wishlistItems = [] } = useGetWishlistQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   useEffect(() => {
     if (totalQuantity > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsBouncing(true);
       const timer = setTimeout(() => setIsBouncing(false), 300);
       return () => clearTimeout(timer);
     }
   }, [totalQuantity]);
 
-  // Combined scroll logic: Desktop glass effect + Mobile smart hide/show
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const isMobile = window.innerWidth < 1024;
 
-      // Update glass theme effect
-      setScrolled(currentScrollY > 60);
 
-      // Smart hide/show for mobile only
-      if (isMobile) {
-        const delta = currentScrollY - lastScrollY;
-        const scrollThreshold = 10;
-
-        if (Math.abs(delta) > scrollThreshold) {
-          if (currentScrollY > lastScrollY && currentScrollY > 120) {
-            // Scrolling Down - Hide
-            setIsVisible(false);
-          } else {
-            // Scrolling Up - Show
-            setIsVisible(true);
-          }
-        }
-      } else {
-        setIsVisible(true); // Ensure visible on desktop resize
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
+  // ... inside Header ...
   const showGlass = scrolled || isSearchFocused;
+  const headerLogoUrl = metadata?.headerLogo?.url
+    ? resolveImageUrl(metadata.headerLogo.url)
+    : "/logo.svg";
 
   return (
     <>
@@ -92,24 +81,23 @@ export function Header() {
         className={`sticky top-0 z-[999] w-full transition-all duration-500 ease-in-out
            ${
              showGlass
-               ? "bg-white border-b border-white/20"
+               ? "bg-white border-b border-white/20 shadow-sm"
                : "bg-white border-b border-gray-100"
            } 
         
         ${!isVisible || isSearchModalOpen ? "-translate-y-full" : "translate-y-0"}
         `}
       >
-        {/* 1. Primary Header Row */}
         <div
-          className={`transition-all duration-700 ${showGlass ? "py-2" : "py-4"}`}
+          className={`transition-all duration-700 ${showGlass ? "py-1.5" : "py-3"}`}
         >
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
             <div className="flex items-center justify-between gap-8">
-              {/* Mobile Menu Trigger */}
               <div className="flex items-center lg:hidden">
                 <button
                   className="p-3 text-gray-900 bg-gray-50 border border-black/5 rounded-2xl active:scale-95 transition-all"
                   onClick={() => setIsMenuOpen(true)}
+                  aria-label="Toggle mobile menu"
                 >
                   <div className="flex flex-col gap-1.5 items-start">
                     <div className="w-6 h-0.5 bg-[#0B1221] rounded-full" />
@@ -119,19 +107,17 @@ export function Header() {
                 </button>
               </div>
 
-              {/* Logo */}
               <Link href="/" className="flex items-center shrink-0 group">
                 <Image
-                  src="/logo.svg"
-                  alt="Avlora Wear Logo"
+                  src={headerLogoUrl}
+                  alt={`${SITE_CONFIG.name} Logo`}
                   width={160}
                   height={60}
                   priority
-                  className="w-auto h-10 lg:h-12 object-contain group-hover:scale-105 transition-transform duration-500"
+                  className="w-auto h-10 lg:h-16 object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </Link>
 
-              {/* Desktop Search */}
               <div className="hidden lg:flex flex-1 max-w-xl">
                 <SearchBar
                   scrolled={scrolled}
@@ -139,10 +125,9 @@ export function Header() {
                 />
               </div>
 
-              {/* Actions: Profile & Cart */}
-              <div className="flex items-center gap-4 lg:gap-8 shrink-0">
+              <div className="flex items-center gap-3 lg:gap-6 shrink-0">
                 <Link
-                  href="/login"
+                  href={isAuthenticated ? "/profile" : "/login"}
                   className="hidden lg:flex items-center gap-3 py-2 px-4 rounded-2xl hover:bg-gray-50 transition-all group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-black/5 group-hover:bg-white group-hover:shadow-lg transition-all duration-500">
@@ -154,7 +139,7 @@ export function Header() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40 leading-none mb-1">
-                      Sign In
+                      {isAuthenticated ? "My Account" : "Sign In"}
                     </span>
                     <span className="text-sm font-bold text-[#0B1221]">
                       Profile
@@ -164,60 +149,119 @@ export function Header() {
 
                 <div className="w-px h-6 bg-gray-100 hidden lg:block" />
 
-                <button
-                  onClick={() => dispatch(setCartOpen(true))}
-                  className={`relative p-3 rounded-2xl bg-[#0B1221] hover:bg-black transition-all duration-500 shadow-xl shadow-black/10 ${isBouncing ? "animate-cart-bounce" : ""}`}
-                >
-                  <ShoppingBag
-                    size={20}
-                    className="text-white"
-                    strokeWidth={1.5}
-                  />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white">
-                    {totalQuantity}
-                  </span>
-                </button>
+                <div className="flex items-center gap-2 lg:gap-3">
+                  {/* Wishlist Icon */}
+                  <Link
+                    href="/wishlist"
+                    className="relative p-3 rounded-2xl bg-gray-50 hover:bg-red-50 hover:text-red-500 border border-black/5 transition-all duration-500 group"
+                    aria-label={`View wishlist, ${wishlistItems.length} items`}
+                  >
+                    <Heart
+                      size={20}
+                      className="text-[#0B1221] transition-colors group-hover:text-red-500"
+                      strokeWidth={1.5}
+                      fill={wishlistItems.length > 0 ? "currentColor" : "none"}
+                    />
+                    {wishlistItems.length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white animate-in zoom-in-50 duration-300">
+                        {wishlistItems.length}
+                      </span>
+                    )}
+                  </Link>
 
-                <button
-                  className="lg:hidden p-3 text-[#0B1221] bg-gray-50 rounded-xl"
-                  onClick={() => setIsSearchModalOpen(true)}
-                >
-                  <Search size={20} strokeWidth={1.5} />
-                </button>
+                  {/* Cart Icon */}
+                  <button
+                    onClick={() => dispatch(setCartOpen(true))}
+                    className={`relative p-3 rounded-2xl bg-[#0B1221] hover:bg-black transition-all duration-500 shadow-xl shadow-black/10 ${isBouncing ? "animate-cart-bounce" : ""}`}
+                    aria-label={`Open shopping cart, ${totalQuantity} items`}
+                  >
+                    <ShoppingBag
+                      size={20}
+                      className="text-white"
+                      strokeWidth={1.5}
+                    />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white">
+                      {totalQuantity}
+                    </span>
+                  </button>
+
+                  <button
+                    className="lg:hidden p-3 text-[#0B1221] bg-gray-50 rounded-xl"
+                    onClick={() => setIsSearchModalOpen(true)}
+                    aria-label="Open search search modal"
+                  >
+                    <Search size={20} strokeWidth={1.5} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 2. Premium Category Navigation (Mega Menu) */}
-        <div className="hidden lg:block border-t border-black/[0.03] relative bg-white/5 backdrop-blur-2xl">
-          <div className="max-w-7xl mx-auto px-6 lg:px-12 relative overflow-visible">
-            {/* Scroll Indicator Fades */}
-            <div className="absolute left-10 top-0 bottom-0 w-20 bg-gradient-to-r  pointer-events-none z-10" />
-            <div className="absolute right-10 top-0 bottom-0 w-20 bg-gradient-to-l  pointer-events-none z-10" />
+        <AnimatePresence initial={false}>
+          {isAtTop && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden lg:block border-t border-black/[0.03] relative bg-white/5 backdrop-blur-2xl overflow-hidden"
+            >
+              <div className="max-w-7xl mx-auto px-6 lg:px-12 relative overflow-visible">
+                <div className="overflow-x-auto no-scrollbar scroll-smooth">
+                  <nav className="flex items-center justify-start lg:justify-center gap-x-12 min-w-max py-2.5 h-12">
+                    {(dynamicCategories.length > 0
+                      ? dynamicCategories.filter(
+                          (c) =>
+                            c.status === "active" && c.showInHeader === true,
+                        )
+                      : []
+                    ).map((category: any) => {
+                      const relevantSubs = category.subcategories || [];
 
-            <div className="overflow-x-auto no-scrollbar scroll-smooth">
-              <nav className="flex items-center justify-start lg:justify-center gap-x-12 min-w-max py-4 h-14">
-                {categories.map((category) => (
-                  <div
-                    key={category.id}
-                    className="group/item relative h-full flex items-center"
-                  >
-                    <Link
-                      href={`/category/${category.slug}`}
-                      className="text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap text-[#0B1221] hover:text-blue-600"
-                    >
-                      {category.name}
-                    </Link>
+                      return (
+                        <div
+                          key={category._id}
+                          className="group/item relative h-full flex items-center"
+                        >
+                          <Link
+                            href={`/category/${category.slug}`}
+                            className="text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap text-[#0B1221] hover:text-blue-600 flex items-center gap-1.5"
+                          >
+                            {category.name}
+                            {relevantSubs.length > 0 && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-600/20 group-hover/item:bg-blue-600 transition-colors" />
+                            )}
+                          </Link>
 
-                    {/* Animated Underline */}
-                    <div className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 transition-transform duration-500 origin-center scale-x-0 group-hover/item:scale-x-100" />
-                  </div>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </div>
+                          {relevantSubs.length > 0 && (
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 pointer-events-none group-hover/item:opacity-100 group-hover/item:pointer-events-auto transition-all duration-300 transform group-hover/item:translate-y-0 translate-y-2 z-[1001]">
+                              <div className="bg-white/80 backdrop-blur-3xl border border-black/5 rounded-[2rem] p-6 shadow-2xl min-w-[200px] border-t-4 border-t-blue-600">
+                                <div className="space-y-3">
+                                  {relevantSubs.map((sub: any) => (
+                                    <Link
+                                      key={sub._id}
+                                      href={`/category/${category.slug}?subcategory=${sub.slug}`}
+                                      className="block text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40 hover:text-blue-600 transition-colors py-1"
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 transition-transform duration-500 origin-center scale-x-0 group-hover/item:scale-x-100" />
+                        </div>
+                      );
+                    })}
+                  </nav>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

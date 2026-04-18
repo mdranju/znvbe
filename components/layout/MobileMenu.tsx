@@ -3,8 +3,10 @@
 import { X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { categories } from "@/lib/data";
+import { useGetCategoriesQuery, useGetSubcategoriesQuery } from "@/src/store/api/categoryApi";
+import { useCMS } from "@/src/hooks/useCMS";
 import Image from "next/image";
+import { SITE_CONFIG } from "@/src/config/site";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,6 +14,13 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+  const { metadata, getImageUrl } = useCMS();
+  const { data: categoriesData = [] } = useGetCategoriesQuery({});
+  const { data: allSubcategories = [] } = useGetSubcategoriesQuery({ status: "active" });
+
+  const dynamicCategories = Array.isArray(categoriesData)
+    ? categoriesData
+    : (categoriesData as any)?.result || [];
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >({});
@@ -22,6 +31,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       [slug]: !prev[slug],
     }));
   };
+
+  const categoriesToRender =
+    dynamicCategories.length > 0
+      ? dynamicCategories.filter((c: any) => c.status === "active" && c.showInHeader === true)
+      : [];
 
   return (
     <>
@@ -48,8 +62,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           >
             <div className="rounded-2xl flex items-center justify-center group-active:scale-90 transition-transform">
               <Image
-                src="/white-logo.svg"
-                alt="Avlora Wear Logo"
+                src={
+                  metadata?.logo
+                    ? getImageUrl(metadata.logo)
+                    : "/white-logo.svg"
+                }
+                alt={`${SITE_CONFIG.name} Logo`}
                 width={40}
                 height={40}
                 className="w-full h-10 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
@@ -58,7 +76,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </Link>
           <button
             onClick={onClose}
-            aria-label="Close menu"
             className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl text-white/40 hover:text-white transition-all"
           >
             <X size={20} />
@@ -72,16 +89,18 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Departments
             </p>
             <ul className="space-y-1">
-              {categories.map((category) => {
-                const hasSubcategories =
-                  category.subcategories && category.subcategories.length > 0;
+              {categoriesToRender.map((category: any) => {
+                const categorySubcategories = allSubcategories.filter(sub => 
+                  (sub.category?._id || sub.category?.id || sub.category) === category._id
+                );
+                const hasSubcategories = categorySubcategories.length > 0;
                 const isExpanded = expandedCategories[category.slug];
 
                 return (
-                  <li key={category.id} className="group">
+                  <li key={category._id || category.id} className="group">
                     <div className="flex items-center justify-between rounded-2xl transition-all duration-300 group-hover:bg-white/5">
                       <Link
-                        href={`/products?category=${category.slug}`}
+                        href={`/category/${category.slug}`}
                         onClick={onClose}
                         className={`flex-1 px-4 py-3.5 font-bold text-sm tracking-tight transition-colors ${
                           isExpanded
@@ -95,12 +114,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       {hasSubcategories && (
                         <button
                           onClick={() => toggleCategory(category.slug)}
-                          aria-label={
-                            isExpanded
-                              ? `Collapse ${category.name}`
-                              : `Expand ${category.name}`
-                          }
-                          aria-expanded={isExpanded}
                           className={`p-3 mr-1 rounded-xl transition-all ${
                             isExpanded
                               ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
@@ -118,10 +131,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     {/* Seamless Subcategory Reveal */}
                     {hasSubcategories && isExpanded && (
                       <ul className="mt-2 ml-4 pl-4 border-l border-white/5 space-y-1 animate-in fade-in slide-in-from-left-4 duration-500">
-                        {category.subcategories?.map((sub) => (
-                          <li key={sub.slug}>
+                        {categorySubcategories.map((sub: any) => (
+                          <li key={sub._id || sub.id}>
                             <Link
-                              href={`/products?category=${category.slug}&sub=${sub.slug}`}
+                              href={`/category/${category.slug}?subcategory=${sub.slug}`}
                               onClick={onClose}
                               className="block px-4 py-2.5 text-xs font-bold text-white/60 hover:text-blue-400 transition-colors uppercase tracking-widest"
                             >
@@ -171,7 +184,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </span>
           </div>
           <p className="text-[9px] font-medium text-white/40 leading-relaxed">
-            &copy; 2026 Avlora Wear. <br /> All rights reserved.
+            &copy; {new Date().getFullYear()} {SITE_CONFIG.name}. <br /> All rights reserved.
           </p>
         </div>
       </div>

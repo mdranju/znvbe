@@ -1,75 +1,82 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Search, X, Clock, ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Search,
+  X,
+  Loader2,
+  ArrowRight,
+  History,
+  TrendingUp,
+} from "lucide-react";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { products } from "@/lib/data";
+import { useRouter } from "next/navigation";
+import { productApi } from "@/src/services/api";
+import { useDebounce } from "@/src/hooks/useDebounce";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { getProductImage } from "@/src/utils/image";
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function SearchModal({ isOpen, onClose }: SearchModalProps) {
+export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("recentSearches");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          return [];
-        }
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const router = useRouter();
+
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("recentSearches");
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved));
+      } catch {
+        /* ignore */
       }
     }
-    return [];
-  });
-  const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
+  }, []);
 
-  // Handle open state: focus input and lock scroll
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      // Small delay to ensure modal is rendered and transition started before focusing
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
+    const fetchSuggestions = async () => {
+      if (debouncedQuery.length < 1) {
+        setSuggestions([]);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const res = await productApi.getAll({
+          searchTerm: debouncedQuery,
+          limit: 5,
+        });
+        const data = res.data?.data;
+        setSuggestions(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Search error:", error);
+        setSuggestions([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [isOpen]);
+    fetchSuggestions();
+  }, [debouncedQuery]);
 
-  // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  const saveSearch = (searchQuery: string) => {
-    const term = searchQuery.trim();
-    if (!term) return;
-    
-    setRecentSearches((prev: string[]) => {
-      // Remove if already exists to move to top
-      const filtered = prev.filter((s: string) => s.toLowerCase() !== term.toLowerCase());
-      const updated = [term, ...filtered].slice(0, 5); // Keep last 5
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
-      return updated;
-    });
+  const saveSearch = (term: string) => {
+    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(
+      0,
+      5,
+    );
+    setRecentSearches(updated);
+    localStorage.setItem("recentSearches", JSON.stringify(updated));
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (query.trim()) {
       saveSearch(query);
       router.push(`/products?search=${encodeURIComponent(query)}`);
@@ -77,173 +84,153 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   };
 
-  const clearSearchStr = () => {
-    setQuery("");
-    inputRef.current?.focus();
-  };
-
-  // Filter products based on query
-  const suggestions = query.trim()
-    ? products
-        .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 5)
-    : [];
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
-      transition={{ type: "spring", damping: 25, stiffness: 200 }}
-      className="fixed inset-0 z-[1001] bg-white flex flex-col lg:hidden"
-    >
-      {/* Search Header */}
-      <div className="px-4 py-3 bg-white border-b border-black/[0.03] flex items-center gap-2">
-        <button
-          onClick={onClose}
-          className="p-2.5 text-[#0B1221] bg-gray-50 rounded-xl active:scale-90 transition-all border border-black/5"
-          aria-label="Go back"
-        >
-          <ArrowLeft size={20} strokeWidth={2} />
-        </button>
+    <div className="fixed inset-0 z-[1000] lg:hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-[#0B1221]/80 backdrop-blur-xl"
+      />
 
-        <form onSubmit={handleSubmit} className="flex-1 relative group">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10 transition-colors duration-300">
-            <Search size={18} className={`${query ? 'text-blue-600' : 'text-[#0B1221]/40'}`} />
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products..."
-            className="w-full pl-11 pr-11 py-3 bg-gray-50 border border-black/5 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 outline-none text-[15px] font-bold text-[#0B1221] transition-all duration-300"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={clearSearchStr}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-black/5 rounded-full text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
-            >
-              <X size={14} />
-            </button>
-          )}
-        </form>
-      </div>
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="absolute inset-x-0 bottom-0 top-0 bg-white shadow-2xl overflow-hidden flex flex-col"
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100 flex items-center gap-4">
+          <button onClick={onClose} className="p-2 -ml-2 text-gray-400" aria-label="Close search modal">
+            <X size={24} />
+          </button>
+          <form onSubmit={handleSearch} className="flex-1 relative">
+            <Search
+              className="absolute left-0 top-1/2 -translate-y-1/2 text-blue-600"
+              size={20}
+            />
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search..."
+              className="w-full pl-8 pr-10 py-2 bg-transparent text-xl font-bold placeholder:text-gray-200 outline-none"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </form>
+        </div>
 
-      {/* Results / Discovery Area */}
-      <div className="flex-1 overflow-y-auto bg-gray-50/30">
-        {!query.trim() ? (
-          <div className="p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between px-1">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">Recent Searches</h3>
-                  <button 
+        <div className="flex-1 overflow-y-auto p-6 space-y-10">
+          {/* Recent Searches */}
+          {!query && recentSearches.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-6">
+                <History size={16} className="text-gray-400" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                  Past Explorations
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((term, i) => (
+                  <button
+                    key={i}
                     onClick={() => {
-                        localStorage.removeItem("recentSearches");
-                        setRecentSearches([]);
+                      setQuery(term);
+                      router.push(`/products?search=${term}`);
+                      onClose();
                     }}
-                    className="text-[9px] font-black uppercase tracking-widest text-red-500/60"
+                    className="px-5 py-3 bg-gray-50 rounded-2xl text-sm font-bold text-[#0B1221] hover:bg-gray-100 transition-all border border-black/5"
                   >
-                    Clear All
+                    {term}
                   </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {recentSearches.map((term: string, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setQuery(term);
-                        saveSearch(term);
-                        router.push(`/products?search=${encodeURIComponent(term)}`);
-                        onClose();
-                      }}
-                      className="px-5 py-2.5 bg-white border border-black/5 rounded-full text-[13px] font-bold text-[#0B1221] shadow-sm active:scale-95 transition-all flex items-center gap-2"
-                    >
-                      <Clock size={14} className="text-[#0B1221]/20" />
-                      {term}
-                    </button>
-                  ))}
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Suggestions */}
+          {query && (
+            <div>
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} className="text-blue-600" />
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    {suggestions.length > 0 ? "Top Matches" : "No results found"}
+                  </h3>
                 </div>
               </div>
-            )}
 
-            {/* Quick Links / Suggestions */}
-            <div className="space-y-4">
-               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 px-1">Suggested for you</h3>
-               <div className="grid grid-cols-2 gap-3">
-                  {['New Arrivals', 'Best Sellers', 'Exclusive', 'On Sale'].map((cat: string) => (
+              {isLoading ? (
+                <div className="space-y-4">
+                  {Array(3)
+                    .fill(0)
+                    .map((_, i) => (
+                      <div key={i} className="flex items-center gap-4 p-3 border border-black/5 rounded-2xl animate-pulse">
+                        <div className="w-16 h-16 bg-gray-100 rounded-xl shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 w-3/4 bg-gray-100 rounded" />
+                          <div className="h-3 w-1/4 bg-gray-50 rounded" />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : suggestions.length > 0 ? (
+                <div className="space-y-2">
+                  {suggestions.map((product) => (
                     <Link
-                      key={cat}
-                      href={`/products?category=${cat.toLowerCase().replace(' ', '-')}`}
-                      onClick={onClose}
-                      className="p-4 bg-white border border-black/5 rounded-2xl flex flex-col gap-2 group hover:border-blue-500/20 hover:shadow-lg transition-all"
+                      key={product._id}
+                      href={`/product/${product.slug}`}
+                      onClick={() => {
+                        saveSearch(query);
+                        onClose();
+                      }}
+                      className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-2xl transition-all border border-transparent hover:border-black/5"
                     >
-                      <span className="text-[13px] font-black text-[#0B1221]">{cat}</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">Browse →</span>
+                      <div className="relative w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-black/5">
+                        <OptimizedImage
+                          src={getProductImage(product)}
+                          alt={product.name}
+                          fill
+                          context="thumbnail"
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[15px] text-[#0B1221] truncate mb-1">
+                          {product.name}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-black text-blue-600">
+                            ৳{product.price}
+                          </p>
+                          <div className="w-1 h-1 rounded-full bg-gray-200" />
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/20">
+                            {product.status === "active"
+                              ? "In Stock"
+                              : "Out of Stock"}
+                          </p>
+                        </div>
+                      </div>
                     </Link>
                   ))}
-               </div>
-            </div>
-          </div>
-        ) : suggestions.length > 0 ? (
-          <div className="bg-white p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="mb-4 px-2">
-               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">Matches Found</h3>
-            </div>
-            <div className="space-y-2">
-              {suggestions.map((product: any) => (
-                <Link
-                  key={product.id}
-                  href={`/product/${product.slug}`}
-                  onClick={() => {
-                    saveSearch(query);
-                    onClose();
-                  }}
-                  className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-2xl transition-all border border-transparent hover:border-black/5"
+                </div>
+              ) : null}
+
+              {suggestions.length > 0 && (
+                <button
+                  onClick={() => handleSearch()}
+                  className="w-full mt-6 py-4 bg-[#0B1221] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-black/10"
                 >
-                  <div className="relative w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-black/5">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[15px] text-[#0B1221] truncate mb-1">
-                      {product.name}
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <p className="text-xs font-black text-blue-600">
-                        ৳{product.price}
-                        </p>
-                        <div className="w-1 h-1 rounded-full bg-gray-200" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/20">In Stock</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  Show all archives
+                  <ArrowRight size={16} />
+                </button>
+              )}
             </div>
-            <button
-              onClick={handleSubmit}
-              className="w-full mt-6 py-4 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] text-white bg-[#0B1221] hover:bg-blue-600 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98]"
-            >
-              See all results for &quot;{query}&quot;
-            </button>
-          </div>
-        ) : (
-          <div className="px-6 py-20 text-center bg-white h-full flex flex-col items-center">
-             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-black/5 shadow-inner">
-                <Search size={28} className="text-[#0B1221]/20" />
-             </div>
-            <p className="text-[#0B1221] font-bold text-lg mb-2 tracking-tighter">No items match your search</p>
-            <p className="text-[#0B1221]/40 text-[13px] font-medium max-w-[200px]">Try different keywords or browse our categories.</p>
-          </div>
-        )}
-      </div>
-    </motion.div>
+          )}
+        </div>
+      </motion.div>
+    </div>
   );
-}
+};
