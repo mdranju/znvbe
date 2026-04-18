@@ -1,61 +1,57 @@
-import { DesktopCursor } from "@/components/desktop/DesktopCursor";
-import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { BackToTopButton } from "@/components/common/BackToTopButton";
 import { PremiumToaster } from "@/components/ui/PremiumToast";
+import { SITE_CONFIG } from "@/src/config/site";
 import type { Metadata } from "next";
 import { Sora, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import { FloatingWhatsAppButton } from "@/components/common/FloatingWhatsAppButton";
-import { BackToTopButton } from "@/components/common/BackToTopButton";
+import { PWAInstallPrompt } from "@/components/common/PWAInstallPrompt";
+import { DesktopCursor } from "@/components/desktop/DesktopCursor";
 
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
   display: "swap",
+  weight: ["400", "700", "800"], // Explicit weights to save bytes
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
   display: "swap",
+  weight: ["400", "500", "700"],
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
   display: "swap",
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Avlora Wear - Premium Quality Apparel",
-  description:
-    "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-  metadataBase: new URL("https://avlorawear.vercel.app"),
-  keywords: [
-    "fashion",
-    "apparel",
-    "premium clothing",
-    "Avlora Wear",
-    "Dhaka fashion",
-  ],
+  title: SITE_CONFIG.meta.title,
+  description: SITE_CONFIG.meta.description,
+  metadataBase: new URL(SITE_CONFIG.baseUrl),
+  keywords: SITE_CONFIG.meta.keywords,
   alternates: {
-    canonical: "https://avlorawear.vercel.app",
+    canonical: SITE_CONFIG.baseUrl,
   },
   openGraph: {
-    title: "Avlora Wear - Premium Quality Apparel",
-    description:
-      "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    url: "https://avlorawear.vercel.app",
-    siteName: "Avlora Wear",
+    title: SITE_CONFIG.meta.title,
+    description: SITE_CONFIG.meta.description,
+    url: SITE_CONFIG.baseUrl,
+    siteName: SITE_CONFIG.name,
     images: [
       {
-        url: "https://avlorawear.vercel.app/white-color-domain.png",
+        url: `${SITE_CONFIG.baseUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "Avlora Wear - Premium Fashion Banner",
+        alt: `${SITE_CONFIG.name} - Premium Fashion Banner`,
       },
     ],
     locale: "en_US",
@@ -63,16 +59,16 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Avlora Wear - Premium Quality Apparel",
-    description:
-      "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    images: ["https://avlorawear.vercel.app/white-color-domain.png"],
-    creator: "@avlorawear",
+    title: SITE_CONFIG.meta.title,
+    description: SITE_CONFIG.meta.description,
+    images: [`${SITE_CONFIG.baseUrl}/og-image.png`],
+    creator: "@seivibe",
   },
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -83,44 +79,43 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Avlora Wear",
-    url: "https://avlorawear.vercel.app",
-    logo: "https://avlorawear.vercel.app/logo.png",
-    sameAs: [
-      "https://facebook.com/avlorawear",
-      "https://instagram.com/avlorawear",
-    ],
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.baseUrl,
+    logo: `${SITE_CONFIG.baseUrl}/logo.png`,
+    sameAs: [SITE_CONFIG.socials.facebook, SITE_CONFIG.socials.instagram],
   };
 
   return (
-    <html lang="en" prefix="og: https://ogp.me/ns#">
+    <html lang="en" className="scroll-smooth">
       <head>
+        {/* Performance: Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=5"
-        />
         <meta name="theme-color" content="#0B1221" />
       </head>
       <body
-        className={`${sora.variable} ${dmSans.variable} ${playfair.variable} ${sora.className} min-h-screen flex flex-col`}
+        className={`${sora.variable} ${dmSans.variable} ${playfair.variable} ${sora.className} min-h-screen flex flex-col antialiased selection:bg-blue-600/20`}
         suppressHydrationWarning
       >
         <StoreProvider>
           {/* Desktop-only glowing cursor */}
           <DesktopCursor />
-          {/* <TopBar /> */}
-          <AnnouncementBar />
+          
           <Header />
-          <main className="flex-grow w-full pb-[20px] lg:pb-0">{children}</main>
+          <main id="main-content" className="flex-grow w-full pb-[20px] lg:pb-0">
+            {children}
+          </main>
           <Footer />
           <MobileBottomNav />
           <FloatingWhatsAppButton />
           <BackToTopButton />
           <PremiumToaster />
+          <PWAInstallPrompt />
         </StoreProvider>
       </body>
     </html>

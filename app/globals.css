@@ -6,35 +6,6 @@
   --font-playfair: var(--font-playfair);
 }
 
-/* ─── Force-hide default swiper icons ─────────────────────── */
-.hero-swiper .swiper-button-next::after,
-.hero-swiper .swiper-button-prev::after {
-  content: "" !important;
-  display: none !important;
-}
-
-/* ─── Premium Slider Animations & Pagination ───────────────── */
-.hero-swiper .swiper-slide img {
-  transform: scale(1);
-  transition: transform 7s cubic-bezier(0.25, 1, 0.5, 1);
-  will-change: transform;
-}
-.hero-swiper .swiper-slide-active img {
-  transform: scale(1);
-}
-.hero-swiper .swiper-pagination-bullet {
-  background-color: rgba(255, 255, 255, 0.4) !important;
-  opacity: 1 !important;
-  transition: all 0.5s ease;
-  width: 6px;
-  height: 6px;
-}
-.hero-swiper .swiper-pagination-bullet-active {
-  background-color: #fff !important;
-  width: 24px;
-  border-radius: 99px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
 
 /* ─── Cart bounce ──────────────────────────────────────────── */
 @keyframes cartBounce {
@@ -50,6 +21,22 @@
 }
 .animate-cart-bounce {
   animation: cartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ─── Image Shimmer Loading ────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+.rounded-inherit {
+  border-radius: inherit;
 }
 
 @utility glass-blur {

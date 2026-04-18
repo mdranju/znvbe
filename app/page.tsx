@@ -1,8 +1,7 @@
-"use client";
-
 import dynamic from "next/dynamic";
-import { DesktopAnimations } from "@/components/desktop/DesktopAnimations";
 import HeroBanner from "@/components/home/HeroBanner";
+import { SITE_CONFIG } from "@/src/config/site";
+import { DesktopAnimations } from "@/components/desktop/DesktopAnimations";
 
 const MarqueeTicker = dynamic(() => import("@/components/home/MarqueeTicker"), {
   ssr: true,
@@ -14,25 +13,63 @@ const ProductItemsSection = dynamic(
   () => import("@/components/home/ProductItemsSection"),
   { ssr: true },
 );
+const FeaturedProducts = dynamic(
+  () => import("@/components/home/FeaturedProducts"),
+  { ssr: true },
+);
+const NewArrivals = dynamic(() => import("@/components/home/NewArrivals"), {
+  ssr: true,
+});
 const CTABanner = dynamic(() => import("@/components/home/CTABanner"), {
   ssr: true,
 });
 
-export default function Home() {
+async function getInitialData() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  try {
+    const bannersRes = await fetch(`${apiUrl}/banner?status=active&type=hero`, {
+      next: { revalidate: 3600 },
+    });
+    const banners = await bannersRes.json();
+    return {
+      heroBanners: banners?.data || [],
+    };
+  } catch (error) {
+    console.error("Server-side fetch error:", error);
+    return { heroBanners: [] };
+  }
+}
+
+export default async function Home() {
+  const data = await getInitialData();
+
   return (
     <>
-      {/* GSAP animations — desktop only, pure side-effect */}
+      {/* ── SEO: Screen Reader H1 ── */}
+      <h1 className="sr-only">
+        {SITE_CONFIG?.meta?.title || "Seivibe"} | Premium Streetwear & Fashion
+        Collection
+      </h1>
+
+      {/* GSAP animations — desktop only */}
       <DesktopAnimations />
 
-      <div className="flex flex-col lg:gap-12 gap-8 lg:pb-12 pb-20 ">
+      <div className="flex flex-col lg:gap-10 gap-8 lg:pb-12 pb-20 ">
         {/* ── Hero Banner ─────────────────────────────────────── */}
-        <HeroBanner />
+        <HeroBanner initialBanners={data.heroBanners} />
 
         {/* ── Marquee Ticker (Desktop Only) ──────────────────── */}
         <MarqueeTicker />
 
         {/* ── Top Categories ──────────────────────────────────── */}
         <TopCategories />
+
+        {/* ── Top Featured ──────────────────────────────────── */}
+        <FeaturedProducts />
+
+        {/* ── New Arrivals ──────────────────────────────────── */}
+        <NewArrivals />
 
         {/* ── Filter Products Section ─────────────────────────────────── */}
         <ProductItemsSection />
