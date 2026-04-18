@@ -1,110 +1,109 @@
 "use client";
 
+import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useGetBannersQuery } from "@/src/store/api/bannerApi";
+import { SITE_CONFIG } from "@/src/config/site";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { resolveImageUrl } from "@/src/utils/image";
+import { BannerSkeleton } from "@/components/ui/SkeletonComponents";
+import { Carousel } from "@/components/common/Carousel";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/effect-fade";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { heroSlides } from "@/lib/data";
+interface HeroBannerProps {
+  initialBanners?: any[];
+}
 
-function HeroBanner() {
+export const HeroBanner = ({ initialBanners }: HeroBannerProps) => {
+  const { data: banners = initialBanners || [], isLoading } = useGetBannersQuery("hero", {
+    skip: !!initialBanners && initialBanners.length > 0,
+  });
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const heroSlides = banners
+    .filter((b: any) => b.type === "hero" && b.status === "active")
+    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
   return (
-    <>
-      {/* ── Hero Banner ─────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto w-full px-4 lg:px-0">
-        <div className="relative w-full aspect-[21/10] md:aspect-[21/10]  lg:rounded-[2rem] rounded-[1rem] overflow-hidden lg:mt-12 mt-4 border border-white/10 group">
-          {/* Ambient Inner Glow (Desktop) */}
-          <div className="absolute inset-0 pointer-events-none  z-10 rounded-[1rem]" />
-
-          <Swiper
-            spaceBetween={0}
-            centeredSlides={true}
-            speed={1200}
-            loop={true}
-            effect="fade"
-            fadeEffect={{ crossFade: true }}
-            autoplay={{ delay: 4000, disableOnInteraction: false }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: false,
-            }}
-            navigation={{
-              nextEl: ".swiper-button-next-custom",
-              prevEl: ".swiper-button-prev-custom",
-            }}
-            modules={[Autoplay, Pagination, Navigation, EffectFade]}
-            className="w-full h-full hero-swiper"
+    <section className="w-full lg:px-4 px-2">
+      <div className="relative w-full aspect-[4/1.69] md:aspect-[21/8.3] overflow-hidden border-b mt-4 border-white/5 group rounded-2xl">
+        {isLoading ? (
+          <BannerSkeleton />
+        ) : (
+          <Carousel
+            autoplay
+            autoplayDelay={5000}
+            fade
+            showDots
+            onSelect={setActiveIndex}
+            className="h-full"
+            containerClassName="h-full"
+            dotColor="bg-white"
           >
-            {/* Premium Navigation Arrows */}
-            <div
-              className="swiper-button-prev-custom absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
-              aria-label="Previous slide"
-              role="button"
-            >
-              <IoIosArrowBack
-                size={24}
-                className="group-hover/btn:-translate-x-1 transition-transform duration-300"
-              />
-            </div>
-            <div
-              className="swiper-button-next-custom absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
-              aria-label="Next slide"
-              role="button"
-            >
-              <IoIosArrowForward
-                size={24}
-                className="group-hover/btn:translate-x-1 transition-transform duration-300"
-              />
-            </div>
-
-            {heroSlides.map((slide, index) => (
-              <SwiperSlide key={slide.id}>
-                <div className="relative w-full h-full overflow-hidden">
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt || `Product showcase ${index + 1}`}
-                    width={1920}
-                    height={900}
-                    className="object-cover h-full w-full"
-                    priority={index === 0}
-                    sizes="100vw"
-                  />
-                  {/* Multi-layered Premium Gradients */}
-                  <div className="absolute inset-0 to-transparent pointer-events-none" />
-                  <div className="absolute inset-0 to-transparent pointer-events-none w-full lg:w-3/4" />
+            {heroSlides.length > 0 ? (
+              heroSlides.map((slide: any, index: number) => (
+                <div
+                  key={slide._id || index}
+                  className="relative w-full h-full flex-[0_0_100%]"
+                >
+                  <Link href={slide.ctaLink || "/products"}>
+                    <div className="relative w-full h-full overflow-hidden group/slide">
+                      <OptimizedImage
+                        src={resolveImageUrl(slide.image)}
+                        alt={slide.title || `Product showcase ${index + 1}`}
+                        width={1920}
+                        height={900}
+                        className="object-cover h-full w-full"
+                        priority={index === 0}
+                        context="hero"
+                        showSkeleton={false}
+                      />
+                      <div className="absolute inset-0 bg-[#0B1221]/10 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-500 flex items-center justify-center z-10"></div>
+                    </div>
+                  </Link>
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+              ))
+            ) : (
+              <div className="relative w-full h-full bg-[#0B1221] flex items-center justify-center">
+                <p className="text-white/20 text-sm font-black uppercase tracking-[0.5em]">
+                  {SITE_CONFIG.name} Premium
+                </p>
+              </div>
+            )}
+          </Carousel>
+        )}
 
-          {/* ── Desktop: Text overlay on hero ── */}
-          <div className="hidden lg:flex absolute inset-0 z-20 items-center pointer-events-none">
+        {/* Desktop: Text overlay on hero */}
+        {!isLoading && heroSlides.length > 0 && (
+          <div className=" hidden lg:flex absolute inset-0 z-20 items-center pointer-events-none">
             <div className="relative px-20 max-w-2xl">
-              <p className="hero-text-line text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase mb-6 opacity-0 shadow-sm flex items-center gap-4">
+              <p
+                key={`badge-${activeIndex}`}
+                className="animate-in fade-in slide-in-from-left-8 duration-700 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase mb-6 flex items-center gap-4"
+              >
                 <span className="w-8 h-px bg-blue-500" />
                 New Season · 2026
               </p>
-              <h1 className="hero-text-line hero-display text-white text-6xl xl:text-7xl mb-6 opacity-0 shadow-2xl leading-[1.1]">
-                Avlora Wear
+              <h1
+                key={`title-${activeIndex}`}
+                className="animate-in fade-in slide-in-from-left-12 duration-1000 delay-100 hero-display text-white text-6xl xl:text-7xl mb-6 leading-[1.1]"
+              >
+                {heroSlides[activeIndex]?.title || SITE_CONFIG.name}
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
-                  Premium Collection
+                  {heroSlides[activeIndex]?.subtitle || "Premium Collection"}
                 </span>
               </h1>
-              <p className="hero-text-line text-white/70 text-lg mb-12 leading-relaxed opacity-0 max-w-lg font-medium drop-shadow-md">
-                Crafted with precision for the modern lifestyle. Experience
-                unmatched comfort and timeless style.
+              <p
+                key={`desc-${activeIndex}`}
+                className="animate-in fade-in slide-in-from-left-16 duration-1000 delay-200 text-white/70 text-lg mb-12 leading-relaxed max-w-lg font-medium drop-shadow-md"
+              >
+                {heroSlides[activeIndex]?.description ||
+                  "Crafted with precision for the modern lifestyle. Experience unmatched comfort and timeless style."}
               </p>
               <Link
-                href="/products"
-                className="hero-cta-btn btn-glow pointer-events-auto inline-flex items-center gap-4 bg-white text-[#0B1221] px-10 py-5 rounded-[2rem] font-black text-[11px] opacity-0 transition-transform hover:scale-105 shadow-[0_10px_40px_rgba(255,255,255,0.2)] uppercase tracking-[0.3em] group/shop"
+                href={heroSlides[activeIndex]?.ctaLink || "/products"}
+                className="pointer-events-auto inline-flex items-center gap-4 bg-white text-[#0B1221] px-10 py-5 rounded-[2rem] font-black text-[11px] transition-transform hover:scale-105 shadow-[0_10px_40px_rgba(255,255,255,0.2)] uppercase tracking-[0.3em] group/shop animate-in fade-in slide-in-from-left-20 duration-1000 delay-300"
               >
                 Shop Now{" "}
                 <ArrowRight
@@ -114,10 +113,10 @@ function HeroBanner() {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-    </>
+        )}
+      </div>
+    </section>
   );
-}
+};
 
 export default HeroBanner;
