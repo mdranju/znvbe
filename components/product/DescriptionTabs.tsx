@@ -1,4 +1,6 @@
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { SITE_CONFIG } from "@/src/config/site";
+import { RichTextRenderer } from "@/components/common/RichTextRenderer";
 
 function DescriptionTabs({
   product,
@@ -40,13 +42,16 @@ function DescriptionTabs({
                 <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
                   Our Collection
                 </p>
-                <h2 className="text-3xl font-black text-gray-900 leading-none mb-6">
-                  Premium <br /> {product.name}
+                <h2 className="text-2xl font-black text-gray-900 leading-none mb-6">
+                  {product.name}
                 </h2>
-                <p className="text-gray-500 font-medium leading-loose text-base">
-                  {product.description ||
-                    "✨ This piece blends classic tradition with a modern, refined finish, making it perfect for both festive and formal occasions. Crafted with the modern believer in mind."}
-                </p>
+                <RichTextRenderer
+                  content={
+                    product.description ||
+                    "✨ This piece blends classic tradition with a modern, refined finish, making it perfect for both festive and formal occasions. Crafted with the modern believer in mind."
+                  }
+                  className="prose-p:font-medium prose-p:leading-loose prose-p:text-gray-500"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-8 py-8 border-y border-gray-100">
@@ -55,7 +60,7 @@ function DescriptionTabs({
                     Authentic
                   </h4>
                   <p className="text-sm font-bold text-gray-400">
-                    Original product from Avlora Wear
+                    Original product from {SITE_CONFIG.name}
                   </p>
                 </div>
                 <div>
@@ -70,10 +75,11 @@ function DescriptionTabs({
             </div>
 
             <div className="relative aspect-square bg-gray-50 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/5 group">
-              <Image
+              <OptimizedImage
                 src={product.image}
                 alt={product.name}
                 fill
+                context="detail"
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/40 to-transparent" />

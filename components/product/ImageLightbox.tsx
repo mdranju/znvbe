@@ -1,7 +1,4 @@
-/* eslint-disable react-hooks/immutability */
-"use client";
-
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -44,6 +41,20 @@ export function ImageLightbox({
     lastTranslate.current = { x: 0, y: 0 };
   }, []);
 
+  const handleManualZoom = (type: "in" | "out") => {
+    const step = 0.5;
+    const newScale = type === "in" 
+      ? Math.min(4, scale + step) 
+      : Math.max(1, scale - step);
+    
+    setScale(newScale);
+    lastScale.current = newScale;
+    
+    if (newScale === 1) {
+      resetTransform();
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       setCurrentIndex(initialIndex);
@@ -59,10 +70,12 @@ export function ImageLightbox({
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") goTo(currentIndex - 1);
       if (e.key === "ArrowRight") goTo(currentIndex + 1);
+      if (e.key === "+" || e.key === "=") handleManualZoom("in");
+      if (e.key === "-" || e.key === "_") handleManualZoom("out");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, onClose, currentIndex]);
+  }, [isOpen, onClose, currentIndex, scale]);
 
   useEffect(() => {
     if (isOpen) {
@@ -155,6 +168,34 @@ export function ImageLightbox({
     }
   };
 
+  // Mouse pan handlers for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (scale > 1) {
+      isPanning.current = true;
+      setIsGesturing(true);
+      panStart.current = {
+        x: e.clientX - translate.x,
+        y: e.clientY - translate.y,
+      };
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isPanning.current) {
+      const nx = e.clientX - panStart.current.x;
+      const ny = e.clientY - panStart.current.y;
+      setTranslate({ x: nx, y: ny });
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (isPanning.current) {
+      isPanning.current = false;
+      setIsGesturing(false);
+      lastTranslate.current = translate;
+    }
+  };
+
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = containerRef.current;
@@ -173,61 +214,63 @@ export function ImageLightbox({
 
   const lightboxContent = (
     <div
-      className="fixed inset-0 z-[9999] bg-[#0B1221]/95 backdrop-blur-3xl flex flex-col"
+      className="fixed inset-0 z-[9999] bg-[#0B1221]/80 backdrop-blur-2xl flex flex-col"
       aria-modal
       role="dialog"
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-6 py-5 shrink-0 z-10">
+      <div className="flex items-center justify-between px-6 py-6 shrink-0 z-10">
         <div className="flex flex-col">
-          <span className="text-white font-black text-xl tracking-tighter leading-none mb-1">
-            Preview Gallery
+          <span className="text-white font-black text-2xl tracking-tighter leading-none mb-1">
+            Product View.
           </span>
-          <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
-            {currentIndex + 1} / {images.length}
-          </span>
+          <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.4em] mt-1">
+            Gallery Artifact {currentIndex + 1} of {images.length}
+          </p>
         </div>
         <button
           onClick={onClose}
-          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white text-white hover:text-[#0B1221] active:scale-95 transition-all duration-500"
+          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white text-white hover:text-[#0B1221] active:scale-95 transition-all duration-500 border border-white/10 hover:border-white shadow-2xl"
           aria-label="Close"
         >
-          <X size={24} />
+          <X size={28} strokeWidth={2.5} />
         </button>
       </div>
 
       {/* Main Image Viewport */}
       <div
         ref={containerRef}
-        className="flex-1 relative overflow-hidden flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+        className={`flex-1 relative overflow-hidden flex items-center justify-center select-none ${scale > 1 ? (isGesturing ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         onClick={(e) => {
           if (e.target === e.currentTarget && scale === 1) onClose();
         }}
       >
         <div
-          className="relative w-full h-[60vh] md:h-[70vh] max-w-5xl mx-auto pointer-events-none"
+          className="relative w-full h-full max-w-6xl mx-auto flex items-center justify-center"
           style={{
             transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
             transformOrigin: "center center",
             transition: isGesturing
               ? "none"
-              : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              : "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)",
           }}
         >
-          <div className="absolute inset-4 rounded-[3rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-3xl overflow-hidden">
+          <div className="relative w-full h-[75vh] flex items-center justify-center p-4">
             <Image
               src={images[currentIndex]}
               alt={`Product view ${currentIndex + 1}`}
               fill
-              className="object-contain"
+              className="object-contain rounded-[2rem]"
               priority
               draggable={false}
             />
-            {/* Subtle ambient light for dark images */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/40 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 
@@ -249,6 +292,36 @@ export function ImageLightbox({
               <ChevronRight size={32} />
             </button>
           )}
+        </div>
+
+        {/* Zoom Controls Overlay (Mobile & Desktop) */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 p-2 bg-white/10 backdrop-blur-2xl rounded-[1.5rem] border border-white/10 shadow-2xl">
+          <button
+            onClick={() => handleManualZoom("out")}
+            disabled={scale <= 1}
+            className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white text-white hover:text-[#0B1221] disabled:opacity-20 transition-all duration-300"
+            aria-label="Zoom Out"
+          >
+            <ZoomOut size={20} />
+          </button>
+          
+          <button
+            onClick={resetTransform}
+            disabled={scale === 1 && translate.x === 0 && translate.y === 0}
+            className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white text-white hover:text-[#0B1221] disabled:opacity-20 transition-all duration-300"
+            aria-label="Reset View"
+          >
+            <RotateCcw size={18} />
+          </button>
+
+          <button
+            onClick={() => handleManualZoom("in")}
+            disabled={scale >= 4}
+            className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white text-white hover:text-[#0B1221] disabled:opacity-20 transition-all duration-300"
+            aria-label="Zoom In"
+          >
+            <ZoomIn size={20} />
+          </button>
         </div>
       </div>
 
