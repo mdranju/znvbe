@@ -1,15 +1,15 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
 
-const axiosInstance = axios.create({
+const adminAxiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-axiosInstance.interceptors.request.use(
+adminAxiosInstance.interceptors.request.use(
   (config) => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -21,20 +21,17 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-axiosInstance.interceptors.response.use(
+adminAxiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
-        // Optionally redirect to login
-        if (!window.location.pathname.includes("/auth")) {
-          // Don't force redirect, let app handle it
-        }
+        window.location.href = "/login?redirect=/dashboard";
       }
     }
     return Promise.reject(error);
   },
 );
 
-export default axiosInstance;
+export default adminAxiosInstance;
