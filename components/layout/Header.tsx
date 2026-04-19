@@ -1,25 +1,24 @@
 "use client";
 import { resolveImageUrl } from "@/src/utils/image";
 
-import { Search, User, ShoppingBag, Heart } from "lucide-react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/src/store/store";
-import { setCartOpen } from "@/src/store/slices/uiSlice";
-import dynamic from "next/dynamic";
-import { SearchBar } from "./SearchBar";
-import Image from "next/image";
-import { categories } from "@/lib/data";
+import { SITE_CONFIG } from "@/src/config/site";
 import { useCMS } from "@/src/hooks/useCMS";
 import { useScroll } from "@/src/hooks/useScroll";
-import { motion, AnimatePresence } from "motion/react";
-import { SITE_CONFIG } from "@/src/config/site";
-import { useGetWishlistQuery } from "@/src/store/api/wishlistApi";
 import {
   useGetCategoriesQuery,
   useGetSubcategoriesQuery,
 } from "@/src/store/api/categoryApi";
+import { useGetWishlistQuery } from "@/src/store/api/wishlistApi";
+import { setCartOpen } from "@/src/store/slices/uiSlice";
+import { RootState } from "@/src/store/store";
+import { Heart, Search, ShoppingBag, User } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { SearchBar } from "./SearchBar";
 
 const MobileMenu = dynamic(
   () => import("./MobileMenu").then((mod) => mod.MobileMenu),
@@ -66,8 +65,6 @@ export function Header() {
       return () => clearTimeout(timer);
     }
   }, [totalQuantity]);
-
-
 
   // ... inside Header ...
   const showGlass = scrolled || isSearchFocused;

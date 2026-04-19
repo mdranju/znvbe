@@ -1,16 +1,16 @@
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { BackToTopButton } from "@/components/common/BackToTopButton";
-import { PremiumToaster } from "@/components/ui/PremiumToast";
-import { SITE_CONFIG } from "@/src/config/site";
-import type { Metadata } from "next";
-import { Sora, DM_Sans, Playfair_Display } from "next/font/google";
-import "./globals.css";
-import StoreProvider from "./StoreProvider";
 import { FloatingWhatsAppButton } from "@/components/common/FloatingWhatsAppButton";
 import { PWAInstallPrompt } from "@/components/common/PWAInstallPrompt";
 import { DesktopCursor } from "@/components/desktop/DesktopCursor";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { PremiumToaster } from "@/components/ui/PremiumToast";
+import { SITE_CONFIG } from "@/src/config/site";
+import type { Metadata } from "next";
+import { DM_Sans, Playfair_Display, Sora } from "next/font/google";
+import "./globals.css";
+import StoreProvider from "./StoreProvider";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -90,8 +90,12 @@ export default function RootLayout({
       <head>
         {/* Performance: Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -105,9 +109,12 @@ export default function RootLayout({
         <StoreProvider>
           {/* Desktop-only glowing cursor */}
           <DesktopCursor />
-          
+
           <Header />
-          <main id="main-content" className="flex-grow w-full pb-[20px] lg:pb-0">
+          <main
+            id="main-content"
+            className="flex-grow w-full pb-[20px] lg:pb-0"
+          >
             {children}
           </main>
           <Footer />
