@@ -19,7 +19,9 @@ import { resolveImageUrl } from "@/src/utils/image";
 
 export function Footer() {
   const { metadata } = useCMS();
-  const footerLogoUrl = metadata?.footerLogo?.url ? resolveImageUrl(metadata.footerLogo.url) : "/white-logo.svg";
+  const footerLogoUrl = metadata?.footerLogo?.url
+    ? resolveImageUrl(metadata.footerLogo.url)
+    : "/white-logo.svg";
 
   return (
     <footer className="hidden lg:block relative bg-[#0B1221] text-white pt-14 pb-12 overflow-hidden">
@@ -41,12 +43,12 @@ export function Footer() {
                 alt={`${SITE_CONFIG.name} Logo`}
                 width={200}
                 height={200}
-                className="object-cover w-full h-16 drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                className="object-cover w-full h-14 drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"
               />
             </Link>
             <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed max-w-[240px]">
-              Premium Luxury Fashion. <br />
-              Established Vibe in <br />
+              Make Your Mark. <br />
+              Premium Luxury Fashion <br />
               London, United Kingdom.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">

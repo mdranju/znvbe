@@ -1,19 +1,19 @@
 export const SITE_CONFIG = {
-  name: "Avlorawear",
-  domain: "avlorawear.com",
-  baseUrl: "https://avlorawear.com",
+  name: "ZNVBE",
+  domain: "znvbe.com",
+  baseUrl: "https://znvbe.com",
   apiUrl: process.env.NEXT_PUBLIC_API_URL,
-  email: "contact@avlorawear.com",
+  email: "contact@znvbe.com",
   socials: {
-    facebook: "https://facebook.com/avlorawear",
-    instagram: "https://instagram.com/avlorawear",
+    facebook: "https://facebook.com/znvbe",
+    instagram: "https://instagram.com/znvbe",
   },
   meta: {
-    title: "Avlorawear - Elevate Your Fashion Vibe",
+    title: "ZNVBE - Make Your Mark",
     description:
-      "Avlorawear is your digital-first fashion destination. Discover trendy, modern, and stylish apparel designed for the global youth.",
+      "ZNVBE is your digital-first fashion destination. Discover trendy, modern, and stylish apparel designed for the global youth.",
     keywords: [
-      "Avlorawear",
+      "ZNVBE",
       "Trendy Fashion",
       "Modern Apparel",
       "Digital Fashion",
@@ -26,8 +26,8 @@ export const SITE_CONFIG = {
     mission:
       "Delivering a stylish, accessible, and premium fashion experience that empowers self-expression globally.",
     valueProposition:
-      "Avlorawear blends cutting-edge digital trends with premium quality, created for those who live life in the spotlight.",
+      "ZNVBE blends cutting-edge digital trends with premium quality, created for those who live life in the spotlight.",
     customerFocus:
-      "We design for the trendsetters and the bold. Every Avlorawear piece is a statement of confidence, style, and modern identity.",
+      "We design for the trendsetters and the bold. Every ZNVBE piece is a statement of confidence, style, and modern identity.",
   },
 };

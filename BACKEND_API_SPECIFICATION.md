@@ -1,13 +1,13 @@
-# Backend API Specification — Avlorawear
+# Backend API Specification — ZNVBE
 
-This document provides a comprehensive blueprint for the backend API required to support the Avlorawear frontend application.
+This document provides a comprehensive blueprint for the backend API required to support the ZNVBE frontend application.
 
 ---
 
 ## 🛰️ General Information
 
 ### Base URL
-`https://api.avlorawear.com/v1`
+`https://api.znvbe.com/v1`
 
 ### Default Headers
 - `Content-Type: application/json`

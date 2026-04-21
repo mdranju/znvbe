@@ -192,13 +192,13 @@ export const heroSlides = [
   {
     id: 6,
     image: "/banner/6.jpg",
-    alt: "Avlorawear Banner",
+    alt: "ZNVBE Banner",
     slug: "",
   },
   {
     id: 7,
     image: "/banner/7.jpg",
-    alt: "Avlorawear Banner",
+    alt: "ZNVBE Banner",
     slug: "",
   },
 ];
@@ -249,7 +249,7 @@ export const products = [
     description:
       "This is a premium quality panjabi made with the best materials. It is very comfortable to wear and looks great. It is perfect for any occasion.",
     details: [
-      { name: "Brand", value: "Avlorawear" },
+      { name: "Brand", value: "ZNVBE" },
       { name: "Collection", value: "As-Shabab" },
       { name: "Color", value: "Crimson Red" },
       { name: "Material", value: "Premium 100% Cotton" },

@@ -85,6 +85,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* Content: Immersive Navigation */}
         <div className="flex-1 overflow-y-auto py-8 px-6 custom-scrollbar space-y-8">
           <div>
+            <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-8 px-2 animate-pulse">
+              Make Your Mark
+            </p>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-6 px-2">
               Departments
             </p>
