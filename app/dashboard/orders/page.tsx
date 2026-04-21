@@ -289,7 +289,7 @@ export default function OrderManagementPage() {
 
               <div className="pt-10">
                 <p className="text-[9px] font-black text-[#0B1221]/20 uppercase tracking-[0.4em] text-center">
-                    Avlorawear Logistics Architecture <br /> Secure Fulfillment Verified
+                    ZNVBE Logistics Architecture <br /> Secure Fulfillment Verified
                 </p>
               </div>
             </div>

@@ -3,8 +3,8 @@ import { Sparkles, ShieldCheck, Zap, Heart, Star, Globe } from "lucide-react";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Our Story | Avlora Wear",
-  description: "Discover the meaning behind Avlora Wear, our vision, philosophy, and commitment to premium fashion excellence.",
+  title: "Our Story | ZNVBE",
+  description: "Discover the meaning behind ZNVBE, our vision, philosophy, and commitment to premium fashion excellence.",
 };
 
 export default function OurStoryPage() {
@@ -12,7 +12,7 @@ export default function OurStoryPage() {
     {
       icon: <Sparkles className="w-6 h-6 text-blue-500" />,
       title: "Distinctive Identity",
-      desc: "The name Avlora is unique, memorable, and instantly evokes a sense of timeless elegance and brilliance.",
+      desc: "The name ZNVBE is unique, memorable, and instantly evokes a sense of timeless elegance and brilliance.",
       bg: "bg-blue-50/50",
       border: "border-blue-100/50"
     },
@@ -33,7 +33,7 @@ export default function OurStoryPage() {
     {
       icon: <Heart className="w-6 h-6 text-rose-500" />,
       title: "Empowerment Through Style",
-      desc: "Wearing Avlora Wear is a statement—it tells the world you value self-expression, refinement, and confidence.",
+      desc: "Wearing ZNVBE is a statement—it tells the world you value self-expression, refinement, and confidence.",
       bg: "bg-rose-50/50",
       border: "border-rose-100/50"
     }
@@ -56,7 +56,7 @@ export default function OurStoryPage() {
 
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
           <p className="text-blue-400 text-[10px] sm:text-xs font-black tracking-[0.8em] uppercase mb-8 animate-in fade-in slide-in-from-top-8 duration-1000">
-            The Aurora of Fashion
+            Make Your Mark
           </p>
           <h1 className="hero-display text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter leading-[0.85] mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
             Our <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-200">Story.</span>
@@ -85,17 +85,17 @@ export default function OurStoryPage() {
                 <div className="space-y-6">
                   <h2 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em]">Brand Journey</h2>
                   <p className="text-2xl md:text-4xl text-[#0B1221] font-black tracking-tight leading-tight">
-                    AvloraWear &ndash; Brand Story &amp; Meaning
+                    ZNVBE &ndash; Make Your Mark
                   </p>
                 </div>
                 
                 <div className="space-y-8">
-                  <h3 className="text-xl font-black text-[#0B1221] uppercase tracking-tighter">The Meaning Behind AvloraWear</h3>
+                  <h3 className="text-xl font-black text-[#0B1221] uppercase tracking-tighter">The Vision of ZNVBE</h3>
                   <p className="text-gray-600 leading-relaxed text-lg">
-                    AvloraWear is more than just a name&mdash;it is a vision, a statement, and a lifestyle. The name &ldquo;Avlora&rdquo; is inspired by &ldquo;Aurora&rdquo;, the magical phenomenon of the dawn. Just as the Aurora illuminates the sky with its ethereal glow, AvloraWear symbolizes new beginnings, brilliance, and elegance in fashion. It is a brand that celebrates light, beauty, and the confidence to shine.
+                    ZNVBE is more than just a name&mdash;it is a vision, a statement, and a lifestyle. Inspired by the desire for bold individuality, ZNVBE symbolizes new beginnings and the courage to define your own path. Our philosophy is rooted in the belief that everyone has a unique story to tell and a distinctive mark to leave on the world.
                   </p>
                   <p className="text-gray-600 leading-relaxed text-lg">
-                    &ldquo;Wear&rdquo; signifies not only clothing, but the experience, the identity, and the statement every piece carries. AvloraWear is about wearing your uniqueness, your confidence, and your style.
+                    ZNVBE signifies the experience, the identity, and the statement every piece carries. It is about wearing your uniqueness, your confidence, and your style. We empower you to make your mark.
                   </p>
                 </div>
 
@@ -105,14 +105,14 @@ export default function OurStoryPage() {
                   <div className="relative z-10 space-y-8 text-center md:text-left">
                     <h2 className="text-white text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none">Our Philosophy.</h2>
                     <p className="text-white/60 text-lg leading-relaxed max-w-3xl font-medium">
-                      At AvloraWear, we believe fashion is more than trends&mdash;it is empowerment, self-expression, and artistry. Each garment is designed to inspire, to transform ordinary moments into extraordinary ones. From the sleek lines of our casual essentials to the bold statements of our premium collections, AvloraWear blends timeless elegance with contemporary edge.
+                      At ZNVBE, we believe fashion is more than trends&mdash;it is empowerment, self-expression, and artistry. Each garment is designed to inspire, to transform ordinary moments into extraordinary ones. From the sleek lines of our casual essentials to the bold statements of our premium collections, ZNVBE blends timeless elegance with contemporary edge.
                     </p>
                     <p className="text-white/40 text-base leading-relaxed max-w-2xl font-medium">
-                      We create for those who dare to stand out, who value quality, and who embrace the confidence that comes with wearing something extraordinary. AvloraWear is not just fashion&mdash;it is a lifestyle, a symbol of prestige, sophistication, and individuality.
+                      We create for those who dare to stand out, who value quality, and who embrace the confidence that comes with wearing something extraordinary. ZNVBE is not just fashion&mdash;it is a lifestyle, a symbol of prestige, sophistication, and individuality.
                     </p>
                   </div>
                   <div className="absolute -bottom-10 -right-10 text-[10rem] font-black text-white/[0.03] leading-none select-none pointer-events-none tracking-tighter uppercase">
-                    Avlora
+                    ZNVBE
                   </div>
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function OurStoryPage() {
               <div className="mt-32 space-y-16">
                 <div className="text-center md:text-left space-y-4">
                   <h2 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em]">Premium Standards</h2>
-                  <p className="text-3xl font-black text-[#0B1221] tracking-tighter uppercase">Why AvloraWear is Premium</p>
+                  <p className="text-3xl font-black text-[#0B1221] tracking-tighter uppercase">Why ZNVBE is Premium</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -148,10 +148,10 @@ export default function OurStoryPage() {
                 <h2 className="text-4xl md:text-6xl font-black text-[#0B1221] tracking-tighter uppercase leading-[0.9] mb-8">Brand Promise.</h2>
                 <div className="space-y-6">
                   <p className="text-xl text-gray-600 font-medium max-w-2xl mx-auto leading-relaxed">
-                    AvloraWear promises style that elevates, quality that lasts, and <span className="text-blue-600">confidence that shines</span>. It is a brand designed to make people feel proud, stylish, and unstoppable every day.
+                    ZNVBE promises style that elevates, quality that lasts, and <span className="text-blue-600">confidence that shines</span>. It is a brand designed to make people feel proud, stylish, and unstoppable every day.
                   </p>
                   <p className="text-sm text-gray-400 font-black uppercase tracking-[0.3em]">
-                    AvloraWear is the dawn of a new era in fashion&mdash;bright, elegant, and unforgettable.
+                    ZNVBE is the dawn of a new era in fashion&mdash;bright, elegant, and unforgettable.
                   </p>
                 </div>
               </div>
@@ -166,7 +166,7 @@ export default function OurStoryPage() {
               <div className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl">
                 <Image 
                   src="https://picsum.photos/seed/story1/800/1000" 
-                  alt="Avlora Evolution" 
+                  alt="ZNVBE Evolution" 
                   fill 
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
@@ -199,7 +199,7 @@ export default function OurStoryPage() {
               <div className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl">
                 <Image 
                   src="https://picsum.photos/seed/story2/800/1000" 
-                  alt="Avlora Craft" 
+                  alt="ZNVBE Craft" 
                   fill 
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />

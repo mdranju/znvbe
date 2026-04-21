@@ -17,7 +17,7 @@ export default function AboutPage() {
             Discover
           </p>
           <h1 className="hero-display text-4xl md:text-6xl text-white uppercase tracking-tighter animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-            About Avlora Wear.
+            About ZNVBE.
           </h1>
         </div>
       </div>
@@ -27,8 +27,8 @@ export default function AboutPage() {
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
           <div className="prose prose-lg sm:prose-xl max-w-none text-gray-600">
             <p className="text-lg sm:text-2xl font-medium text-[#0B1221] leading-relaxed mb-10">
-              Avlora Wear is a premier fashion brand dedicated to high-quality
-              apparel. We started our journey with a vision to provide
+              ZNVBE is a premier fashion brand dedicated to high-quality
+              apparel. Our mantra is to <strong>Make Your Mark</strong>. We started our journey with a vision to provide
               exceptional style, modest silhouettes, and premium comfort for the
               modern fashion enthusiast.
             </p>

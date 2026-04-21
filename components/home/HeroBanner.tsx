@@ -81,8 +81,7 @@ export const HeroBanner = ({ initialBanners }: HeroBannerProps) => {
                 key={`badge-${activeIndex}`}
                 className="animate-in fade-in slide-in-from-left-8 duration-700 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase mb-6 flex items-center gap-4"
               >
-                <span className="w-8 h-px bg-blue-500" />
-                New Season · 2026
+                Make Your Mark
               </p>
               <h1
                 key={`title-${activeIndex}`}

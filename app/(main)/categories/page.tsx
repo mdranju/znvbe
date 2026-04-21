@@ -113,7 +113,7 @@ export default function CategoriesPage() {
         <div className="mt-40 pt-20 border-t border-black/5 flex flex-col items-center">
           <div className="w-px h-24 bg-gradient-to-b from-blue-600 to-transparent opacity-30 mb-8" />
           <p className="text-[10px] font-black uppercase tracking-[0.6em] text-[#0B1221]/20 text-center px-12 leading-relaxed">
-            Curated by Avlorawear Creative House. <br /> All collections are strictly verified.
+            Curated by ZNVBE Creative House. <br /> All collections are strictly verified.
           </p>
         </div>
       </div>

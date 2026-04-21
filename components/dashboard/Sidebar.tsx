@@ -63,15 +63,15 @@ export function Sidebar() {
             <img
               src={dashboardLogoUrl}
               alt="Logo"
-              className="h-16 w-full object-cover"
+              className="h-14 w-full object-cover"
             />
           ) : (
             <>
               <div className="w-10 h-10 bg-[#0B1221] rounded-xl flex items-center justify-center shadow-lg shadow-black/10">
-                <span className="text-white text-xl font-black italic">A.</span>
+                <span className="text-white text-xl font-black italic">Z.</span>
               </div>
               <span className="text-xl font-black text-[#0B1221] tracking-tighter">
-                AVLORAWEAR <span className="text-blue-600">.</span>
+                ZNVBE <span className="text-blue-600">.</span>
               </span>
             </>
           )}

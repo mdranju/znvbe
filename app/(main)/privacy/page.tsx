@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
           <div className="prose prose-lg max-w-none text-gray-600">
             <p className="text-xl font-medium text-[#0B1221] leading-relaxed mb-10 pb-10 border-b border-gray-100">
-              At Avlora Wear, we respect your privacy and are committed to
+              At ZNVBE, we respect your privacy and are committed to
               protecting your personal data. This privacy policy explains how we
               collect, use, and safeguard your information when you visit our
               website.
@@ -118,10 +118,10 @@ export default function PrivacyPage() {
                   You have the right to access, correct, or delete your personal
                   data. If you have any questions, please contact us at{" "}
                   <a
-                    href="mailto:contact@avlorawear.com"
+                    href="mailto:contact@znvbe.com"
                     className="text-blue-600 hover:text-blue-700 font-bold no-underline"
                   >
-                    contact@avlorawear.com
+                    contact@znvbe.com
                   </a>{" "}
                   or call us at{" "}
                   <a

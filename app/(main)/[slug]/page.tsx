@@ -17,7 +17,7 @@ export default function DynamicStaticPage() {
 
   useEffect(() => {
     if (pageData) {
-      document.title = pageData.metaTitle || `${pageData.title} | Avlora Wear`;
+      document.title = pageData.metaTitle || `${pageData.title} | ZNVBE`;
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
         metaDesc.setAttribute("content", pageData.metaDescription || "");

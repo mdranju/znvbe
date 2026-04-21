@@ -328,7 +328,7 @@ export default function PagesManagementPage() {
                   value={formData.metaTitle}
                   onChange={handleInputChange}
                   className="w-full px-5 py-3.5 bg-gray-50 border border-black/5 rounded-xl outline-none focus:border-blue-500 transition-all font-bold text-sm"
-                  placeholder="e.g. Terms & Conditions - Avlora Wear"
+                  placeholder="e.g. Terms & Conditions - ZNVBE"
                 />
               </div>
               <div className="space-y-2">

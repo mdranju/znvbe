@@ -128,7 +128,7 @@ export function PWAInstallPrompt() {
           </div>
           <div className="flex flex-col">
             <h3 className="text-sm font-black uppercase tracking-tight">
-              AVLORAWEAR APP
+              ZNVBE APP
             </h3>
             <p className="text-[10px] font-medium text-white/50 uppercase tracking-widest leading-none mt-1">
               Install for a faster, better experience.

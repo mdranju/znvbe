@@ -3,21 +3,21 @@ import { MapPin, Phone, Clock, Navigation } from "lucide-react";
 
 const STORES = [
   {
-    name: "Avlorawear - London Soho",
+    name: "ZNVBE - London Soho",
     address: "24 Carnaby St, Soho, London W1F 7DB, UK",
     phone: "+44 20 7123 4567",
     hours: "Mon–Sat: 10AM–8PM, Sun: 12PM–6PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Avlorawear - New York Manhattan",
+    name: "ZNVBE - New York Manhattan",
     address: "452 Broadway, New York, NY 10013, USA",
     phone: "+1 212-555-0198",
     hours: "Mon–Sat: 10AM–9PM, Sun: 11AM–7PM",
     maps: "https://maps.google.com",
   },
   {
-    name: "Avlorawear - Dubai Mall",
+    name: "ZNVBE - Dubai Mall",
     address: "Level 1, The Dubai Mall, Downtown Dubai, UAE",
     phone: "+971 4 362 7500",
     hours: "Daily: 10AM–12AM",

@@ -48,7 +48,7 @@ export default async function Home() {
     <>
       {/* ── SEO: Screen Reader H1 ── */}
       <h1 className="sr-only">
-        {SITE_CONFIG?.meta?.title || "Avlorawear"} | Premium Streetwear & Fashion
+        {SITE_CONFIG?.meta?.title || "ZNVBE"} | Premium Streetwear & Fashion
         Collection
       </h1>
 

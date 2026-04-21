@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     title: SITE_CONFIG.meta.title,
     description: SITE_CONFIG.meta.description,
     images: [`${SITE_CONFIG.baseUrl}/og-image.png`],
-    creator: "@avlorawear",
+    creator: "@znvbe",
   },
   icons: {
     icon: "/logo.png",
