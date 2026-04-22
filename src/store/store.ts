@@ -15,11 +15,9 @@ import authReducer from "./slices/authSlice";
 import cartReducer from "./slices/cartSlice";
 import uiReducer from "./slices/uiSlice";
 import { baseApi } from "./api/baseApi";
-import { adminApi } from "./api/adminApi";
 
 const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
-  [adminApi.reducerPath]: adminApi.reducer,
   auth: authReducer,
   cart: cartReducer,
   ui: uiReducer,
@@ -40,7 +38,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(baseApi.middleware, adminApi.middleware),
+    }).concat(baseApi.middleware),
 });
 
 export const persistor = persistStore(store);

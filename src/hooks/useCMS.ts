@@ -11,11 +11,18 @@ export function useCMS() {
 
   useEffect(() => {
     async function fetchMetadata() {
+      if (!BASE_URL) return;
       try {
-        const response = await axios.get(`${BASE_URL}/metadata`);
-        setMetadata(response.data.data);
+        const response = await axios.get(`${BASE_URL}/admin/metadata`);
+        if (response.data?.success && response.data?.data) {
+          setMetadata(response.data.data);
+        } else {
+          setMetadata({});
+        }
       } catch (error) {
-        console.error("Failed to fetch CMS metadata:", error);
+        // Silently handle missing metadata to prevent breaking the UI
+        console.warn("CMS Metadata not found, using defaults");
+        setMetadata({});
       } finally {
         setLoading(false);
       }

@@ -39,7 +39,6 @@ export function Pagination({
 
         <div className="flex items-center gap-1">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-            // Logic to show limited pages if totalPages is large
             if (
               page === 1 ||
               page === totalPages ||

@@ -6,7 +6,7 @@ import { BackButton } from "@/components/common/BackButton";
 import { ProductCard } from "@/components/product/ProductCard";
 import Link from "next/link";
 import { SearchX } from "lucide-react";
-import { Pagination } from "@/components/dashboard/Pagination";
+import { Pagination } from "@/components/common/Pagination";
 
 export default function ProductsPage({
   searchParams,

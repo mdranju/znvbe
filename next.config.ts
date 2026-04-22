@@ -33,6 +33,15 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: "/dashboard/:path*",
+        destination: `${process.env.NEXT_PUBLIC_DASHBOARD_URL || "http://localhost:3001"}/:path*`,
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
