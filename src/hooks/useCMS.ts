@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
 
 export function useCMS() {
   const [metadata, setMetadata] = useState<any>(null);
@@ -13,7 +13,7 @@ export function useCMS() {
     async function fetchMetadata() {
       if (!BASE_URL) return;
       try {
-        const response = await axios.get(`${BASE_URL}/admin/metadata`);
+        const response = await axios.get(`${BASE_URL}/metadata`);
         if (response.data?.success && response.data?.data) {
           setMetadata(response.data.data);
         } else {

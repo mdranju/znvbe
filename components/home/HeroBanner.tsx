@@ -15,9 +15,10 @@ interface HeroBannerProps {
 }
 
 export const HeroBanner = ({ initialBanners }: HeroBannerProps) => {
-  const { data: banners = initialBanners || [], isLoading } = useGetBannersQuery("hero", {
-    skip: !!initialBanners && initialBanners.length > 0,
-  });
+  const { data: banners = initialBanners || [], isLoading } =
+    useGetBannersQuery("hero", {
+      skip: !!initialBanners && initialBanners.length > 0,
+    });
   const [activeIndex, setActiveIndex] = useState(0);
 
   const heroSlides = banners
@@ -75,7 +76,7 @@ export const HeroBanner = ({ initialBanners }: HeroBannerProps) => {
 
         {/* Desktop: Text overlay on hero */}
         {!isLoading && heroSlides.length > 0 && (
-          <div className=" hidden lg:flex absolute inset-0 z-20 items-center pointer-events-none">
+          <div className=" hidden flex absolute inset-0 z-20 items-center pointer-events-none">
             <div className="relative px-20 max-w-2xl">
               <p
                 key={`badge-${activeIndex}`}
